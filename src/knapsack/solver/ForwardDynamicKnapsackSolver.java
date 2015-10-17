@@ -10,13 +10,13 @@ import knapsack.KnapsackItem;
 
 public class ForwardDynamicKnapsackSolver extends AbstractKnapsackSolver {
 
-    private ArrayList<KnapsackItem> listStates;
+    private ArrayList<ItemState> listStates;
 
     public ForwardDynamicKnapsackSolver(KnapsackItem[] instance, int capacity) {
         super(instance, capacity);
     }
 
-    private boolean stateIsDominated(KnapsackItem testedItem, KnapsackItem initialItem) {
+    private boolean stateIsDominated(ItemState testedItem, ItemState initialItem) {
     	return initialItem.weight <= testedItem.weight && initialItem.profit >= testedItem.profit;
     }
     
@@ -24,29 +24,37 @@ public class ForwardDynamicKnapsackSolver extends AbstractKnapsackSolver {
         this.solution = null;
         this.solutionValue = 0;
 
-        listStates = new ArrayList<KnapsackItem>();
-        listStates.add(new KnapsackItem(0,0)); // initial state
+        int lowerBound = valueGreedyInteger();
+        System.out.println("LB: "+lowerBound);
 
-        ArrayList<KnapsackItem> tmpListStates;
+        listStates = new ArrayList<ItemState>();
+        listStates.add(new ItemState(0,0, null)); // initial state
+
+        ArrayList<ItemState> tmpListStates;
 
         // fill
         int valueTakeItem = 0;
         int valueDontTakeItem = 0;
         for (int k = 0; k < this.instance.length; k++) {
-        	tmpListStates = new ArrayList<KnapsackItem>();
-            for (KnapsackItem item : listStates) {
-                if (item.weight + this.instance[k].weight <= capacity) {
+        	tmpListStates = new ArrayList<ItemState>();
+            Iterator<ItemState> ik = listStates.iterator();
+            while (ik.hasNext()) {
+                ItemState item = ik.next();
+                // prune by bound
+                if (item.profit + this.solveRelaxation(k, this.instance.length, this.capacity-item.weight) < lowerBound) {
+                    ik.remove();
+                } else if (item.weight + this.instance[k].weight <= capacity) {
                     // merge by dominance
-                    KnapsackItem tmpState = new KnapsackItem(item.weight + this.instance[k].weight, item.profit + this.instance[k].profit);
+                    ItemState tmpState = new ItemState(item.weight + this.instance[k].weight, item.profit + this.instance[k].profit, item);
                     boolean isDominated = false;
-                    for (KnapsackItem itemDominance : listStates) {
+                    for (ItemState itemDominance : listStates) {
                         if (stateIsDominated(tmpState, itemDominance)) {
                             isDominated = true;
                             break;
                         }
                     }
                     if (! isDominated) {
-                        for (KnapsackItem itemDominance : tmpListStates) {
+                        for (ItemState itemDominance : tmpListStates) {
                             if (stateIsDominated(tmpState, itemDominance)) {
                                 isDominated = true;
                                 break;
@@ -59,8 +67,8 @@ public class ForwardDynamicKnapsackSolver extends AbstractKnapsackSolver {
                 }
             }
             // delete old state dominated by new state
-            for (KnapsackItem newItem : tmpListStates) {
-                Iterator<KnapsackItem> i = listStates.iterator();
+            for (ItemState newItem : tmpListStates) {
+                Iterator<ItemState> i = listStates.iterator();
                 while (i.hasNext()) {
                     if (stateIsDominated(i.next(), newItem)) {
                         i.remove();
@@ -76,7 +84,7 @@ public class ForwardDynamicKnapsackSolver extends AbstractKnapsackSolver {
                 .max()
                 .getAsInt();
 
-        // System.out.println("In List : "+listStates.size());
+        System.out.println("In List : "+listStates.size());
 
         return this.solutionValue;
     }
@@ -85,27 +93,40 @@ public class ForwardDynamicKnapsackSolver extends AbstractKnapsackSolver {
     public boolean[] getSolution() {
         if (this.solution == null) {
             this.solution = new boolean[this.instance.length];
-            
-            int currentProfit = this.solutionValue;
-            int currentCapacity = listStates.stream()
+
+            ItemState currentState = listStates.stream()
                 .filter(e -> e.profit == this.solutionValue)
-                .mapToInt(e -> e.weight)
-                .min()
-                .getAsInt();
+                .min(KnapsackItem.comparatorByWeight()).get();
+
+            int itemProfit = 0;
+            int itemWeight = 0;
+            if (currentState.lastState != null) {
+                itemProfit = currentState.profit - currentState.lastState.profit;
+                itemWeight = currentState.weight - currentState.lastState.weight;
+            }
 
             for (int k = this.instance.length-1; k >= 0; k--) {
-                int k2 = k;
-                int currentProfit2 = currentProfit;
-                int currentCapacity2 = currentCapacity;
-                if (listStates.stream().anyMatch(e -> (e.profit == currentProfit2-this.instance[k2].profit && e.weight == currentCapacity2-this.instance[k2].weight))) {
+                if (currentState != null && this.instance[k].profit == itemProfit && this.instance[k].weight == itemWeight) {
                     this.solution[k] = true;
-                    currentCapacity -= this.instance[k].weight;
-                    currentProfit -= this.instance[k].profit;
+                    currentState = currentState.lastState;
+                    if (currentState.lastState != null) {
+                        itemProfit = currentState.profit - currentState.lastState.profit;
+                        itemWeight = currentState.weight - currentState.lastState.weight;
+                    }
                 } else {
                     this.solution[k] = false;
                 }
             }
         }
         return this.solution;
+    }
+}
+
+class ItemState extends KnapsackItem {
+    public ItemState lastState;
+
+    public ItemState(int weight, int profit, ItemState lastState) {
+        super(weight, profit);
+        this.lastState = lastState;
     }
 }

@@ -8,13 +8,13 @@ import knapsack.solver.*;
 public class Main {
     public static void main(String[] args) {
 
-        int maxCapacity = 100;
+        int maxCapacity = 50;
 
-        AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(0, 40, 0, 30);
-        KnapsackItem[] knapsack = generator.generateKnapsack(10);
+        AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(0, 20, 0, 30);
+        KnapsackItem[] knapsack = generator.generateKnapsack(20);
 
         // AbstractKnapsackGenerator generator = new LinearKnapsackGenerator(100, 120, 2.2f);
-        // KnapsackItem[] knapsack = generator.generateKnapsack(2000);
+        // KnapsackItem[] knapsack = generator.generateKnapsack(10000);
 
         System.out.println("Taille Knapsack :"+knapsack.length);
 
@@ -22,15 +22,15 @@ public class Main {
 
         /* BRANCH AND BOUND */
 
-        // System.out.println("");
-        // System.out.println("Branch and bound :");
-        // AbstractKnapsackSolver solverBab = new BabKnapsackSolver(knapsack, maxCapacity);
-        // int solutionValueBab = solverBab.solve();
+        System.out.println("");
+        System.out.println("Branch and bound :");
+        AbstractKnapsackSolver solverBab = new BabKnapsackSolver(knapsack, maxCapacity);
+        int solutionValueBab = solverBab.solve();
 
-        // boolean[] solution = solverBab.getSolution();
+        boolean[] solution = solverBab.getSolution();
 
-        // System.out.println("Solution value :"+solutionValueBab);
-        // System.out.println("Solution :"+Arrays.toString(solution));
+        System.out.println("Solution value :"+solutionValueBab);
+        System.out.println("Solution :"+Arrays.toString(solution));
 
 
         /* int capacity = 0;

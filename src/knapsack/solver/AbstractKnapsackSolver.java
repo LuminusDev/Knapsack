@@ -1,7 +1,7 @@
 package knapsack.solver;
 
-import java.util.Collections;
 import java.util.Arrays;
+import java.util.Collections;
 
 import knapsack.KnapsackItem;
 
@@ -30,7 +30,13 @@ public abstract class AbstractKnapsackSolver {
     //sort by profit/weight descending
     //change initial array
     public void sortInstanceByRatio() {
-        Arrays.sort(this.instance, Collections.reverseOrder());
+        Arrays.sort(this.instance, Collections.reverseOrder(KnapsackItem.comparatorByRatio()));
+    }
+
+    //sort by profit/weight descending
+    //change initial array
+    public void sortInstanceByProfit() {
+        Arrays.sort(this.instance, Collections.reverseOrder(KnapsackItem.comparatorByProfit()));
     }
 
     public int solve() {
@@ -46,6 +52,26 @@ public abstract class AbstractKnapsackSolver {
                 solution += this.instance[i].profit * (float)currentCapacity / (float)this.instance[i].weight;
                 break;
             } else {
+                solution += this.instance[i].profit;
+                currentCapacity -= this.instance[i].weight;
+            }
+        }
+        return solution;
+    }
+
+    public int valueGreedyInteger() {
+        this.sortInstanceByProfit();
+        int solutionProfit = solveGreedyInteger();
+        this.sortInstanceByRatio();
+        int solutionRatio = solveGreedyInteger();
+        return Integer.max(solutionRatio, solutionProfit);
+    }
+
+    public int solveGreedyInteger() {
+        int solution = 0;
+        int currentCapacity = this.capacity;
+        for (int i = 0; i < this.instance.length; i++) {
+            if (this.instance[i].weight <= currentCapacity) {
                 solution += this.instance[i].profit;
                 currentCapacity -= this.instance[i].weight;
             }
