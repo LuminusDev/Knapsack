@@ -12,6 +12,7 @@ public class SimpleDynamicKnapsackSolver extends AbstractKnapsackSolver {
 
     public SimpleDynamicKnapsackSolver(KnapsackItem[] instance, int capacity) {
         super(instance, capacity);
+        this.solverName = "Backward Dynamic Program";
     }
     
     protected int solveInstance() {

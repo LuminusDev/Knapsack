@@ -12,6 +12,8 @@ public abstract class AbstractKnapsackSolver {
     protected boolean[] solution;
     protected int solutionValue;
 
+    protected String solverName;
+
     protected abstract int solveInstance();
     
     public AbstractKnapsackSolver(KnapsackItem[] instance, int capacity) {
@@ -77,5 +79,10 @@ public abstract class AbstractKnapsackSolver {
             }
         }
         return solution;
+    }
+
+    @Override
+    public String toString() {
+        return solverName;
     }
 }

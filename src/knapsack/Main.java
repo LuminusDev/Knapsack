@@ -8,10 +8,13 @@ import knapsack.solver.*;
 public class Main {
     public static void main(String[] args) {
 
-        int maxCapacity = 50;
+        int maxCapacity = 1000;
 
-        AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(0, 20, 0, 30);
-        KnapsackItem[] knapsack = generator.generateKnapsack(20);
+        // AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(0, 10, 0, 30);
+        // KnapsackItem[] knapsack = generator.generateKnapsack(10);
+
+        AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(0, 500, 0, 1500);
+        KnapsackItem[] knapsack = generator.generateKnapsack(500);
 
         // AbstractKnapsackGenerator generator = new LinearKnapsackGenerator(100, 120, 2.2f);
         // KnapsackItem[] knapsack = generator.generateKnapsack(10000);
@@ -21,17 +24,8 @@ public class Main {
 
 
         /* BRANCH AND BOUND */
-
-        System.out.println("");
-        System.out.println("Branch and bound :");
         AbstractKnapsackSolver solverBab = new BabKnapsackSolver(knapsack, maxCapacity);
-        int solutionValueBab = solverBab.solve();
-
-        boolean[] solution = solverBab.getSolution();
-
-        System.out.println("Solution value :"+solutionValueBab);
-        System.out.println("Solution :"+Arrays.toString(solution));
-
+        solveKnapsack(solverBab);
 
         /* int capacity = 0;
         KnapsackItem[] instance = solverBab.getInstance();
@@ -45,34 +39,33 @@ public class Main {
 
 
         /* BACKWARD DYNAMIC PROGRAM */
-        
-        System.out.println("");
-        System.out.println("Backward dynamic program :");
         AbstractKnapsackSolver solverDP = new SimpleDynamicKnapsackSolver(knapsack, maxCapacity);
-        int solutionValueDP = solverDP.solve();
-
-        boolean[] solutionDP = solverDP.getSolution();
-
-        System.out.println("Solution value :"+solutionValueDP);
-        System.out.println("Solution :"+Arrays.toString(solutionDP));
-
+        solveKnapsack(solverDP);
 
         /* ((SimpleDynamicKnapsackSolver)solverDP).printMatrix(); */
 
 
 
         /* FORWARD DYNAMIC PROGRAM */
-        System.out.println("");
-        System.out.println("Forward dynamic program :");
         AbstractKnapsackSolver solverDPF = new ForwardDynamicKnapsackSolver(knapsack, maxCapacity);
-        int solutionValueDPF = solverDPF.solve();
+        solveKnapsack(solverDPF);
 
-        boolean[] solutionDPF = solverDPF.getSolution();
-
-        System.out.println("Solution value :"+solutionValueDPF);
-        System.out.println("Solution :"+Arrays.toString(solutionDPF));
+        /* GRAPH SHORTEST LENGTH */
+        AbstractKnapsackSolver solverGraph = new GraphKnapsackSolver(knapsack, maxCapacity);
+        solveKnapsack(solverGraph);
 
 
         System.exit(0);
+    }
+
+    public static void solveKnapsack(AbstractKnapsackSolver solver) {
+        System.out.println("");
+        System.out.println(solver);
+        int solutionValue = solver.solve();
+
+        boolean[] solution = solver.getSolution();
+
+        System.out.println("Solution value : "+solutionValue);
+        // System.out.println("Solution : "+Arrays.toString(solution));
     }
 }
