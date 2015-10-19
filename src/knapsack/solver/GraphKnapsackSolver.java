@@ -1,5 +1,7 @@
 package knapsack.solver;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -14,7 +16,7 @@ import knapsack.KnapsackItem;
 public class GraphKnapsackSolver extends AbstractKnapsackSolver {
 
 	private Grph g;
-	private NumericalProperty edgeWeight = new NumericalProperty("edge weights", 64, 0);
+	private NumericalProperty edgeWeight = new NumericalProperty("edge weights", 32, 0);
 	private int vertexDest;
 	private int maxProfit;
 	private int[] path;
@@ -26,14 +28,24 @@ public class GraphKnapsackSolver extends AbstractKnapsackSolver {
             .mapToInt(e -> e.profit)
             .max()
             .getAsInt();
-        createGraph();
+        this.g = null;
     }
     
     protected int solveInstance() {
+        if (g == null) {
+            Instant start = Instant.now();
+            createGraph();
+            Instant end = Instant.now();
+            System.out.println("Time creation graph : "+Duration.between(start, end));
+        }
+
         this.solution = new boolean[this.instance.length];
         this.solutionValue = 0;
 
+        Instant startD = Instant.now();
         Path p = g.getShortestPath(0, this.vertexDest, this.edgeWeight);
+        Instant endD = Instant.now();
+        System.out.println("Time Dijkstra : "+Duration.between(startD, endD));
 
         this.path = p.toVertexArray();
         for (int i = 0; i < this.path.length-1; i++) {

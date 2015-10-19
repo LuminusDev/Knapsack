@@ -45,10 +45,49 @@ public abstract class AbstractKnapsackSolver {
         return solveInstance();
     }
 
+    public int getCriticItem() {
+        int currentCapacity = this.capacity;
+        for (int i = 0; i < this.instance.length; i++) {
+            if (this.instance[i].weight >= currentCapacity) {
+                return i;
+            } else {
+                currentCapacity -= this.instance[i].weight;
+            }
+        }
+        return -1;
+    }
+
     public float solveRelaxation(int idxFirstItem, int idxSecondItem, int maxCapacity) {
         float solution = 0;
         int currentCapacity = maxCapacity;
         for (int i = idxFirstItem; i < idxSecondItem; i++) {
+            if (this.instance[i].weight >= currentCapacity) {
+                //we take what we can and lets go
+                solution += this.instance[i].profit * (float)currentCapacity / (float)this.instance[i].weight;
+                break;
+            } else {
+                solution += this.instance[i].profit;
+                currentCapacity -= this.instance[i].weight;
+            }
+        }
+        return solution;
+    }
+
+    public float solveRelaxation(int idxFirstItem, int idxSecondItem, int idxThirdItem, int idxFourthItem, int maxCapacity) {
+        float solution = 0;
+        int currentCapacity = maxCapacity;
+        for (int i = idxFirstItem; i < idxSecondItem; i++) {
+            if (this.instance[i].weight >= currentCapacity) {
+                //we take what we can and lets go
+                solution += this.instance[i].profit * (float)currentCapacity / (float)this.instance[i].weight;
+                currentCapacity = 0;
+                break;
+            } else {
+                solution += this.instance[i].profit;
+                currentCapacity -= this.instance[i].weight;
+            }
+        }
+        for (int i = idxThirdItem; i < idxFourthItem && currentCapacity != 0; i++) {
             if (this.instance[i].weight >= currentCapacity) {
                 //we take what we can and lets go
                 solution += this.instance[i].profit * (float)currentCapacity / (float)this.instance[i].weight;

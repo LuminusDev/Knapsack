@@ -11,10 +11,13 @@ public abstract class AbstractKnapsackGenerator {
 	protected abstract KnapsackItem generateItem();
 
 	public AbstractKnapsackGenerator() {
-		this.random = new Random();
-	}
+        long rgenseed = System.currentTimeMillis();
+        System.out.println("Seed used : "+rgenseed);
+        this.random = new Random(rgenseed);
+    }
 
     public void setSeed(long seed) {
+        System.out.println("Seed used : "+seed);
         this.random.setSeed(seed);
     }
 

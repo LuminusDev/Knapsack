@@ -25,5 +25,4 @@ public class RandomKnapsackGenerator extends AbstractKnapsackGenerator {
     	KnapsackItem ki = new KnapsackItem(weight, profit);
     	return ki;
     }
-
 }
