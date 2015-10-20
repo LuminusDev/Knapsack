@@ -17,10 +17,10 @@ public class Main {
     public static void main(String[] args) {
 
         /* test */
-        int maxCapacity = 20;
-        AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(1, 5, 1, 10);
+        int maxCapacity = 250;
+        AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(1, 100, 1, 15);
         // generator.setSeed(1445273741725L);
-        KnapsackItem[] knapsack = generator.generateKnapsack(10);
+        KnapsackItem[] knapsack = generator.generateKnapsack(100);
 
         /* test 13s graph. seed = 1445263733912L */
         // int maxCapacity = 400;
@@ -52,6 +52,18 @@ public class Main {
         // AbstractKnapsackGenerator generator = new LinearKnapsackGenerator(100, 5000, 0.2f);
         // KnapsackItem[] knapsack = generator.generateKnapsack(10000);
 
+        /* test 39s branch and bound. seed = 1445350665030L*/
+        // int maxCapacity = 20000;
+        // AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(200, 1000, 500, 550);
+        // generator.setSeed(1445350665030L);
+        // KnapsackItem[] knapsack = generator.generateKnapsack(1000);
+
+        /* test linear 3m36 forward (trop long core) backward immediat solution = relaxation pourtant */
+        /* branch and bound immediat */
+        // int maxCapacity = 20000;
+        // AbstractKnapsackGenerator generator = new LinearKnapsackGenerator(10, 10, 1f);
+        // KnapsackItem[] knapsack = generator.generateKnapsack(1000);
+
 
 
 
@@ -69,13 +81,13 @@ public class Main {
         AbstractKnapsackSolver solverDPF = new ForwardDynamicKnapsackSolver(knapsack, maxCapacity);
         solveKnapsack(solverDPF);
 
-        /* BACKWARD DYNAMIC PROGRAM */
-        AbstractKnapsackSolver solverDP = new SimpleDynamicKnapsackSolver(knapsack, maxCapacity);
-        solveKnapsack(solverDP);
-
         /* CORE DYNAMIC PROGRAM */
         AbstractKnapsackSolver solverCore = new CoreDynamicKnapsackSolver(knapsack, maxCapacity);
         solveKnapsack(solverCore);
+
+        /* BACKWARD DYNAMIC PROGRAM */
+        AbstractKnapsackSolver solverDP = new SimpleDynamicKnapsackSolver(knapsack, maxCapacity);
+        solveKnapsack(solverDP);
 
         /* GRAPH SHORTEST LENGTH */
         // AbstractKnapsackSolver solverGraph = new GraphKnapsackSolver(knapsack, maxCapacity);
@@ -100,7 +112,7 @@ public class Main {
         System.out.println("TIME TOTAL : "+Duration.between(startSolve, end));
 
         System.out.println("Solution value : "+solutionValue);
-        System.out.println("Solution : "+Arrays.toString(solution));
+        // System.out.println("Solution : "+Arrays.toString(solution));
 
         try {
             String memoryUsage = new String();
