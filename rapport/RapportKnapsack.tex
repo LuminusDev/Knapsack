@@ -1,0 +1,286 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[tikz]{bclogo}
+\usepackage{geometry}
+\usepackage{array}
+\usepackage{version}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{floatrow}
+\usepackage{url}
+\usepackage{enumitem}
+\bibliographystyle{alpha}
+\usepackage[counterclockwise]{rotating}
+\geometry{hmargin=2.5cm,vmargin=1.5cm}
+
+\setlength{\parskip}{1ex plus 2ex minus 1ex}
+\newcolumntype{M}[1]{
+    >{\raggedright}m{#1}
+}
+\setlist[description]{topsep=20pt}
+
+% Table float box with bottom caption, box width adjusted to content
+\newfloatcommand{capbtabbox}{table}[][\FBwidth]
+
+\title{
+ \begin{minipage}\linewidth
+        \centering
+        Résolution du problème de Sac à dos 
+        \vskip3pt
+        \large Rapport de projet
+    \end{minipage}
+ }
+ 
+\bibliographystyle{alpha}
+\author{Kévin Barreau}
+
+\begin{document}
+
+\maketitle
+
+\abstract
+L'objectif du projet est d'implémenter différentes méthodes de résolution du problème de sac à dos binaire, afin des les comparer. Il s'agit des méthodes du Branch And Bound, de Programmation Dynamique (sous plusieurs implémentations), de Modèle de Flot dans un graphe, ainsi que l'utilisation du solveur Cplex. Le langage de programmation pour atteindre ce but est libre, mais sa rapidité est essentielle pour la résolution. J'ai par conséquent choisi de réaliser le projet en Java, au détriment de C++. Les résultats sont présentés en prenant en compte les comportements des algorithmes suivant les types d'instance (nombre d'objets, capacité maximale du sac, corrélation des objets).
+
+\newpage
+
+\renewcommand{\contentsname}{Sommaire} 
+\tableofcontents
+
+\newpage
+
+\section{Présentation du projet}
+
+\subsection{Description du problème}
+
+\paragraph{}Explication du problème de sac à dos, puis sac à dos binaire.
+
+\subsection{Méthodes de résolution}
+
+\paragraph{}Pour résoudre ce problème, plusieurs algorithmes ont été implémenté.
+\begin{itemize}
+	\item Branch And Bound
+	\item Programme Dynamique (Simple Backward)
+	\item Programme Dynamique (Forward avec liste)
+	\item Programme Dynamique (Core avec liste)
+	\item Plus court chemin dans un graphe
+\end{itemize}
+Un modèle du problème est aussi réalisé afin de résoudre les instances dans le solveur CPlex.
+
+\paragraph{}Le Branch And Bound utilise des bornes supérieures et inférieures pour couper des branches de l'arbre d'énumération des solutions, sur lequel on réalise un parcours en profondeur. Une borne supérieure est donné par la valeur de la solution partielle actuelle dans l'arbre, à laquelle on ajoute la valeur de la relaxation linéaire du problème partielle restant. Une borne inférieure correspond à la valeur de la meilleure solution complète trouvée à l'instant.
+
+\paragraph{}Programme Dynamique Simple backward.
+
+\paragraph{}Programme Dynamique Forward avec liste.
+
+\paragraph{}Programme Dynamique Core avec liste.
+
+\paragraph{}Plus court chemin graphe.
+
+\section{Implémentation des algorithmes de résolution du problème de sac à dos binaire}
+
+\subsection{Branch And Bound spécialisé}
+
+\paragraph{}
+
+\subsection{Programme dynamique (simple backward)}
+
+\paragraph{}
+
+\subsection{Programme dynamique (forward en liste)}
+
+\paragraph{}
+
+\subsection{Programme dynamique (core en liste)}
+
+\paragraph{}
+
+\subsection{Plus court chemin dans un graphe}
+
+\paragraph{}
+
+\section{Comparaisons}
+
+\paragraph{}Génération des instances avec un générateur pseudo-aléatoire possédant comme paramètres le poids min et max d'un objet, le profit min et max d'un objet. Générateur linéaire, avec un profit proportionnel au poids. Permet de créer des instances fortement corrélées (tous avec le même ratio profit/poids par exemple).
+
+\paragraph{}Comparaisons sur le temps d'exécution ainsi que sur l'empreinte mémoire.
+
+\paragraph{}Explications des instances critiques
+
+\subsection{Instance critique du Branch And Bound}
+
+\paragraph{}Paramètres de l'instance
+
+\begin{tabular}{|c|c|c|c|c|c|}
+	\hline
+	Capacité & Objets & \multicolumn{2}{c|}{Poids} & \multicolumn{2}{c|}{Profit} \\
+	\cline{3-6}
+		& & min & max & min & max \\
+	\hline
+	400 & 200 & 10 & 100 & 1 & 200 \\
+	\hline
+\end{tabular}
+
+\begin{figure}[!h]
+\begin{floatrow}
+\capbtabbox{
+\begin{tabular}{|l|r|r|}
+	\hline
+	 & Temps & Mémoire \\
+	\hline
+	BaB & 0.002s & Faible \\
+	Backward & 0.009s & Moyenne \\
+	Forward & 0.052s & Moyenne \\
+	Core & 0.006s & Faible \\
+	\textbf{Graphe} & 12.892s & Elevée \\
+	CPlex & 80 & 20 \\
+	\hline
+\end{tabular}
+}{\caption{Résultats}}
+\end{floatrow}
+\end{figure}
+
+\paragraph{}Remarques
+
+\subsection{Instance critique du programme dynamique (simple backward)}
+
+\paragraph{}Paramètres de l'instance
+
+\begin{tabular}{|c|c|c|c|c|c|}
+	\hline
+	Capacité & Objets & \multicolumn{2}{c|}{Poids} & \multicolumn{2}{c|}{Profit} \\
+	\cline{3-6}
+		& & min & max & min & max \\
+	\hline
+	400 & 200 & 10 & 100 & 1 & 200 \\
+	\hline
+\end{tabular}
+
+
+\paragraph{}Remarques
+
+\begin{figure}[!h]
+\begin{floatrow}
+\capbtabbox{
+\begin{tabular}{|l|r|r|}
+	\hline
+	 & Temps & Mémoire \\
+	\hline
+	BaB & 0.002s & Faible \\
+	Backward & 0.009s & Moyenne \\
+	Forward & 0.052s & Moyenne \\
+	Core & 0.006s & Faible \\
+	\textbf{Graphe} & 12.892s & Elevée \\
+	CPlex & 80 & 20 \\
+	\hline
+\end{tabular}
+}{\caption{Résultats}}
+\end{floatrow}
+\end{figure}
+
+\paragraph{}Remarques
+
+\subsection{Instance critique du programme dynamique (forward avec liste)}
+
+\paragraph{}Paramètres de l'instance (générateur linéaire)
+
+\begin{tabular}{|c|c|c|c|c|}
+	\hline
+	Capacité & Objets & Poids initial & Profit initial & Corrélation \\
+	\hline
+	20000 & 1000 & 10 & 10 & 1 \\
+	\hline
+\end{tabular}
+
+\begin{figure}[!h]
+\begin{floatrow}
+\capbtabbox{
+\begin{tabular}{|l|r|r|}
+	\hline
+	 & Temps & Mémoire \\
+	\hline
+	BaB & 0.002s & Faible \\
+	Backward & 0.116s & Élevée \\
+	Forward & 4m14s & Moyenne \\
+	Core & >10m & Moyenne \\
+	\textbf{Graphe} & >10m & Élevée \\
+	CPlex & 80 & 20 \\
+	\hline
+\end{tabular}
+}{\caption{Résultats}}
+\end{floatrow}
+\end{figure}
+
+\paragraph{}Remarques
+
+\subsection{Instance critique du programme dynamique (core avec liste)}
+
+\paragraph{}Paramètres de l'instance (générateur aléatoire)
+
+\begin{tabular}{|c|c|c|c|c|c|}
+	\hline
+	Capacité & Objets & \multicolumn{2}{c|}{Poids} & \multicolumn{2}{c|}{Profit} \\
+	\cline{3-6}
+		& & min & max & min & max \\
+	\hline
+	400 & 200 & 10 & 100 & 1 & 200 \\
+	\hline
+\end{tabular}
+
+\begin{figure}[!h]
+\begin{floatrow}
+\capbtabbox{
+\begin{tabular}{|l|r|r|}
+	\hline
+	 & Temps & Mémoire \\
+	\hline
+	BaB & 0.002s & Faible \\
+	Backward & 0.009s & Moyenne \\
+	Forward & 0.052s & Moyenne \\
+	Core & 0.006s & Faible \\
+	\textbf{Graphe} & 12.892s & Élevée \\
+	CPlex & 80 & 20 \\
+	\hline
+\end{tabular}
+}{\caption{Résultats}}
+\end{floatrow}
+\end{figure}
+
+\paragraph{}Remarques
+
+\subsection{Instance critique du plus court chemin dans un graphe}
+
+\paragraph{}Paramètres de l'instance
+
+\begin{tabular}{|c|c|c|c|c|c|}
+	\hline
+	Capacité & Objets & \multicolumn{2}{c|}{Poids} & \multicolumn{2}{c|}{Profit} \\
+	\cline{3-6}
+		& & min & max & min & max \\
+	\hline
+	400 & 200 & 10 & 100 & 1 & 200 \\
+	\hline
+\end{tabular}
+
+\begin{figure}[!h]
+\begin{floatrow}
+\capbtabbox{
+\begin{tabular}{|l|r|r|}
+	\hline
+	 & Temps & Mémoire \\
+	\hline
+	BaB & 0.002s & Faible \\
+	Backward & 0.009s & Moyenne \\
+	Forward & 0.052s & Moyenne \\
+	Core & 0.006s & Faible \\
+	\textbf{Graphe} & 12.892s & Elevée \\
+	CPlex & 80 & 20 \\
+	\hline
+\end{tabular}
+}{\caption{Résultats}}
+\end{floatrow}
+\end{figure}
+
+\paragraph{}Remarques
+
+\end{document}
