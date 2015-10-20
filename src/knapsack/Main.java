@@ -16,11 +16,11 @@ import knapsack.solver.*;
 public class Main {
     public static void main(String[] args) {
 
-        /* test 13s graph. seed = 1445263733912L */
-        // int maxCapacity = 20;
-        // AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(1, 5, 1, 10);
+        /* test */
+        int maxCapacity = 20;
+        AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(1, 5, 1, 10);
         // generator.setSeed(1445273741725L);
-        // KnapsackItem[] knapsack = generator.generateKnapsack(10);
+        KnapsackItem[] knapsack = generator.generateKnapsack(10);
 
         /* test 13s graph. seed = 1445263733912L */
         // int maxCapacity = 400;
@@ -31,10 +31,10 @@ public class Main {
         /* test 24s branch and bound. seed = 1445263039090L */
         /* test 8s branch and bound. seed = 1445262961192L */
         /* test 0.2s branch and bound. seed = 1445263002833L */
-        int maxCapacity = 2000;
-        AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(40, 44, 1, 300);
-        generator.setSeed(1445263039090L);
-        KnapsackItem[] knapsack = generator.generateKnapsack(400);
+        // int maxCapacity = 2000;
+        // AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(40, 44, 1, 300);
+        // generator.setSeed(1445263039090L);
+        // KnapsackItem[] knapsack = generator.generateKnapsack(400);
 
         /* test VERY LONG branch and bound. seed = 1445262961192L */
         // int maxCapacity = 2000;
@@ -42,7 +42,14 @@ public class Main {
         // generator.setSeed(1445262961192L);
         // KnapsackItem[] knapsack = generator.generateKnapsack(400);
 
-        // AbstractKnapsackGenerator generator = new LinearKnapsackGenerator(100, 120, 2.2f);
+        /* test linear 1s backward */
+        // int maxCapacity = 20000;
+        // AbstractKnapsackGenerator generator = new LinearKnapsackGenerator(100, 5000, -0.2f);
+        // KnapsackItem[] knapsack = generator.generateKnapsack(10000);
+
+        /* test linear 1s backward 6s core */
+        // int maxCapacity = 20000;
+        // AbstractKnapsackGenerator generator = new LinearKnapsackGenerator(100, 5000, 0.2f);
         // KnapsackItem[] knapsack = generator.generateKnapsack(10000);
 
 
@@ -93,7 +100,7 @@ public class Main {
         System.out.println("TIME TOTAL : "+Duration.between(startSolve, end));
 
         System.out.println("Solution value : "+solutionValue);
-        // System.out.println("Solution : "+Arrays.toString(solution));
+        System.out.println("Solution : "+Arrays.toString(solution));
 
         try {
             String memoryUsage = new String();

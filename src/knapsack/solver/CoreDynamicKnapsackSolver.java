@@ -38,10 +38,10 @@ public class CoreDynamicKnapsackSolver extends AbstractKnapsackSolver {
         return sum; 
     }
 
-    private int calculateLowerBound(ArrayList<ItemStateCore> listStates) {
+    private int calculateLowerBound(ArrayList<ItemStateCore> tmpListStates) {
         int lowerBound = -1;
         try{
-             lowerBound = listStates.stream()
+             lowerBound = tmpListStates.stream()
                 .filter(e -> e.weight <= this.capacity)
                 .mapToInt(e -> e.profit)
                 .max()
@@ -52,6 +52,23 @@ public class CoreDynamicKnapsackSolver extends AbstractKnapsackSolver {
 
     private int getUpperBound(ItemStateCore item) {
         return item.profit - sumProfitTo(item.a) + (int)solveRelaxation(0, item.a, item.b+1, this.instance.length, this.capacity - item.weight + sumWeightTo(item.a));
+    }
+
+    private void eliminateByDominanceAndBound(ArrayList<ItemStateCore> tmpListStates,  int lowerBound) {
+        Iterator<ItemStateCore> ik = tmpListStates.iterator();
+        while (ik.hasNext()) {
+            ItemStateCore item = ik.next();
+            if (getUpperBound(item) < lowerBound) {
+                ik.remove();
+            } else {
+                for (ItemStateCore tmpItem : tmpListStates) {
+                    if (stateIsDominated(item, tmpItem)) {
+                        ik.remove();
+                        break;
+                    }
+                }
+            }
+        }
     }
     
     protected int solveInstance() {
@@ -81,21 +98,7 @@ public class CoreDynamicKnapsackSolver extends AbstractKnapsackSolver {
 
                 }
                 lowerBound = calculateLowerBound(tmpListStates);
-                // eliminer par borne et dominance
-                Iterator<ItemStateCore> ik = tmpListStates.iterator();
-                while (ik.hasNext()) {
-                    ItemStateCore item = ik.next();
-                    if (getUpperBound(item) < lowerBound) {
-                        ik.remove();
-                    } else {
-                        for (ItemStateCore tmpItem : tmpListStates) {
-                            if (stateIsDominated(item, tmpItem)) {
-                                ik.remove();
-                                break;
-                            }
-                        }
-                    }
-                }
+                eliminateByDominanceAndBound(tmpListStates, lowerBound);
                 listStates = tmpListStates;
             }
             if (b < this.instance.length-1) {
@@ -109,21 +112,7 @@ public class CoreDynamicKnapsackSolver extends AbstractKnapsackSolver {
                     }
                 }
                 lowerBound = calculateLowerBound(tmpListStates);
-                // eliminer par borne et dominance
-                Iterator<ItemStateCore> ik = tmpListStates.iterator();
-                while (ik.hasNext()) {
-                    ItemStateCore item = ik.next();
-                    if (getUpperBound(item) < lowerBound) {
-                        ik.remove();
-                    } else {
-                        for (ItemStateCore tmpItem : tmpListStates) {
-                            if (stateIsDominated(item, tmpItem)) {
-                                ik.remove();
-                                break;
-                            }
-                        }
-                    }
-                }
+                eliminateByDominanceAndBound(tmpListStates, lowerBound);
                 listStates = tmpListStates;
             }
         }
@@ -145,21 +134,13 @@ public class CoreDynamicKnapsackSolver extends AbstractKnapsackSolver {
                 .min(KnapsackItem.comparatorByWeight()).get();
 
             int idxItem;
-
             while (currentState.lastState != null) {
                 idxItem = currentState.a != currentState.lastState.a ? currentState.a : currentState.b;
-                if (idxItem == currentState.a) {
-                    if (currentState.profit == currentState.lastState.profit && currentState.weight == currentState.lastState.weight) {
-                        this.solution[idxItem] = true;
-                    } else {
-                        this.solution[idxItem] = false;
-                    }
+                if ((idxItem == currentState.a && currentState.profit == currentState.lastState.profit && currentState.weight == currentState.lastState.weight)
+                || (idxItem == currentState.b && currentState.profit != currentState.lastState.profit && currentState.weight != currentState.lastState.weight)) {
+                    this.solution[idxItem] = true;
                 } else {
-                    if (currentState.profit != currentState.lastState.profit && currentState.weight != currentState.lastState.weight) {
-                        this.solution[idxItem] = true;
-                    } else {
-                        this.solution[idxItem] = false;
-                    }
+                    this.solution[idxItem] = false;
                 }
                 currentState = currentState.lastState;
             }
