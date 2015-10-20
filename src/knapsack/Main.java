@@ -17,10 +17,10 @@ public class Main {
     public static void main(String[] args) {
 
         /* test 13s graph. seed = 1445263733912L */
-        // int maxCapacity = 40;
-        // AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(1, 10, 1, 20);
+        // int maxCapacity = 20;
+        // AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(1, 5, 1, 10);
         // generator.setSeed(1445273741725L);
-        // KnapsackItem[] knapsack = generator.generateKnapsack(20);
+        // KnapsackItem[] knapsack = generator.generateKnapsack(10);
 
         /* test 13s graph. seed = 1445263733912L */
         // int maxCapacity = 400;
@@ -84,8 +84,8 @@ public class Main {
         Instant startSolve = Instant.now();
         int solutionValue = solver.solve();
 
-        // boolean[] solution = solver.getSolution();
         Instant startSolution = Instant.now();
+        boolean[] solution = solver.getSolution();
 
         Instant end = Instant.now();
         System.out.println("Time solve : "+Duration.between(startSolve, startSolution));

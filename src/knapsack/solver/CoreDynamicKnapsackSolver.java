@@ -72,15 +72,13 @@ public class CoreDynamicKnapsackSolver extends AbstractKnapsackSolver {
         int a = c;
         int b = c-1;
         while(a > 0 || b < this.instance.length-1) {
-            if (b < this.instance.length-1) {
-                b++;
+            if (a > 0) {
+                a--;
                 tmpListStates = new ArrayList<ItemStateCore>();
                 for (ItemStateCore item : listStates) {
-                    tmpListStates.add(new ItemStateCore(item.a, item.b+1, item.weight, item.profit, item));
-                    int w2 = item.weight - sumWeightTo(item.a);
-                    if (w2 + this.instance[item.b+1].weight <= this.capacity) {
-                        tmpListStates.add(new ItemStateCore(item.a, item.b+1, item.weight + this.instance[item.b+1].weight, item.profit + this.instance[item.b+1].profit, item));
-                    }
+                    tmpListStates.add(new ItemStateCore(item.a-1, item.b, item.weight, item.profit, item));
+                    tmpListStates.add(new ItemStateCore(item.a-1, item.b, item.weight - this.instance[item.a-1].weight, item.profit - this.instance[item.a-1].profit, item));
+
                 }
                 lowerBound = calculateLowerBound(tmpListStates);
                 // eliminer par borne et dominance
@@ -100,13 +98,15 @@ public class CoreDynamicKnapsackSolver extends AbstractKnapsackSolver {
                 }
                 listStates = tmpListStates;
             }
-            if (a > 0) {
-                a--;
+            if (b < this.instance.length-1) {
+                b++;
                 tmpListStates = new ArrayList<ItemStateCore>();
                 for (ItemStateCore item : listStates) {
-                    tmpListStates.add(new ItemStateCore(item.a-1, item.b, item.weight, item.profit, item));
-                    tmpListStates.add(new ItemStateCore(item.a-1, item.b, item.weight - this.instance[item.a-1].weight, item.profit - this.instance[item.a-1].profit, item));
-
+                    tmpListStates.add(new ItemStateCore(item.a, item.b+1, item.weight, item.profit, item));
+                    int w2 = item.weight - sumWeightTo(item.a);
+                    if (w2 + this.instance[item.b+1].weight <= this.capacity) {
+                        tmpListStates.add(new ItemStateCore(item.a, item.b+1, item.weight + this.instance[item.b+1].weight, item.profit + this.instance[item.b+1].profit, item));
+                    }
                 }
                 lowerBound = calculateLowerBound(tmpListStates);
                 // eliminer par borne et dominance
@@ -137,33 +137,33 @@ public class CoreDynamicKnapsackSolver extends AbstractKnapsackSolver {
 
     @Override
     public boolean[] getSolution() {
-        // if (this.solution == null) {
-        //     this.solution = new boolean[this.instance.length];
+        if (this.solution == null) {
+            this.solution = new boolean[this.instance.length];
 
-        //     ItemStateCore currentState = listStates.stream()
-        //         .filter(e -> e.profit == this.solutionValue)
-        //         .min(KnapsackItem.comparatorByWeight()).get();
+            ItemStateCore currentState = listStates.stream()
+                .filter(e -> e.profit == this.solutionValue)
+                .min(KnapsackItem.comparatorByWeight()).get();
 
-        //     int itemProfit = 0;
-        //     int itemWeight = 0;
-        //     if (currentState.lastState != null) {
-        //         itemProfit = currentState.profit - currentState.lastState.profit;
-        //         itemWeight = currentState.weight - currentState.lastState.weight;
-        //     }
+            int idxItem;
 
-        //     for (int k = this.instance.length-1; k >= 0; k--) {
-        //         if (currentState != null && this.instance[k].profit == itemProfit && this.instance[k].weight == itemWeight) {
-        //             this.solution[k] = true;
-        //             currentState = currentState.lastState;
-        //             if (currentState.lastState != null) {
-        //                 itemProfit = currentState.profit - currentState.lastState.profit;
-        //                 itemWeight = currentState.weight - currentState.lastState.weight;
-        //             }
-        //         } else {
-        //             this.solution[k] = false;
-        //         }
-        //     }
-        // }
+            while (currentState.lastState != null) {
+                idxItem = currentState.a != currentState.lastState.a ? currentState.a : currentState.b;
+                if (idxItem == currentState.a) {
+                    if (currentState.profit == currentState.lastState.profit && currentState.weight == currentState.lastState.weight) {
+                        this.solution[idxItem] = true;
+                    } else {
+                        this.solution[idxItem] = false;
+                    }
+                } else {
+                    if (currentState.profit != currentState.lastState.profit && currentState.weight != currentState.lastState.weight) {
+                        this.solution[idxItem] = true;
+                    } else {
+                        this.solution[idxItem] = false;
+                    }
+                }
+                currentState = currentState.lastState;
+            }
+        }
         return this.solution;
     }
 }
