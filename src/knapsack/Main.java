@@ -19,7 +19,7 @@ public class Main {
         /* test */
         int maxCapacity = 250;
         AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(1, 100, 1, 15);
-        // generator.setSeed(1445273741725L);
+        generator.setSeed(1445273741725L);
         KnapsackItem[] knapsack = generator.generateKnapsack(100);
 
         /* test 13s graph. seed = 1445263733912L */
@@ -71,23 +71,23 @@ public class Main {
 
         System.out.println("Taille Knapsack :"+knapsack.length);
 
-        // CplexDatFile.createFile(knapsack, maxCapacity, "instanceRandom400");
+        // CplexDatFile.createFile(knapsack, maxCapacity, "iclForwardCoreLong");
 
         /* BRANCH AND BOUND */
         // AbstractKnapsackSolver solverBab = new BabKnapsackSolver(knapsack, maxCapacity);
         // solveKnapsack(solverBab);
 
         /* FORWARD DYNAMIC PROGRAM */
-        AbstractKnapsackSolver solverDPF = new ForwardDynamicKnapsackSolver(knapsack, maxCapacity);
-        solveKnapsack(solverDPF);
+        // AbstractKnapsackSolver solverDPF = new ForwardDynamicKnapsackSolver(knapsack, maxCapacity);
+        // solveKnapsack(solverDPF);
 
         /* CORE DYNAMIC PROGRAM */
-        AbstractKnapsackSolver solverCore = new CoreDynamicKnapsackSolver(knapsack, maxCapacity);
-        solveKnapsack(solverCore);
+        // AbstractKnapsackSolver solverCore = new CoreDynamicKnapsackSolver(knapsack, maxCapacity);
+        // solveKnapsack(solverCore);
 
         /* BACKWARD DYNAMIC PROGRAM */
-        AbstractKnapsackSolver solverDP = new SimpleDynamicKnapsackSolver(knapsack, maxCapacity);
-        solveKnapsack(solverDP);
+        // AbstractKnapsackSolver solverDP = new SimpleDynamicKnapsackSolver(knapsack, maxCapacity);
+        // solveKnapsack(solverDP);
 
         /* GRAPH SHORTEST LENGTH */
         // AbstractKnapsackSolver solverGraph = new GraphKnapsackSolver(knapsack, maxCapacity);
