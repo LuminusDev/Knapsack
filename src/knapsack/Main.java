@@ -17,10 +17,10 @@ public class Main {
     public static void main(String[] args) {
 
         /* test */
-        int maxCapacity = 250;
-        AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(1, 100, 1, 15);
-        generator.setSeed(1445273741725L);
-        KnapsackItem[] knapsack = generator.generateKnapsack(100);
+        // int maxCapacity = 20;
+        // AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(1, 10, 1, 15);
+        // generator.setSeed(1445273741725L);
+        // KnapsackItem[] knapsack = generator.generateKnapsack(10);
 
         /* test 13s graph. seed = 1445263733912L */
         // int maxCapacity = 400;
@@ -41,16 +41,19 @@ public class Main {
         // AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(40, 44, 120, 140);
         // generator.setSeed(1445262961192L);
         // KnapsackItem[] knapsack = generator.generateKnapsack(400);
+        // outputRandomGeneratorLatex(maxCapacity, 400, 40, 44, 120, 140);
 
         /* test linear 1s backward */
         // int maxCapacity = 20000;
         // AbstractKnapsackGenerator generator = new LinearKnapsackGenerator(100, 5000, -0.2f);
         // KnapsackItem[] knapsack = generator.generateKnapsack(10000);
+        // outputLinearGeneratorLatex(maxCapacity, 10000, 100, 5000, -0.2f);
 
         /* test linear 1s backward 6s core */
-        // int maxCapacity = 20000;
-        // AbstractKnapsackGenerator generator = new LinearKnapsackGenerator(100, 5000, 0.2f);
-        // KnapsackItem[] knapsack = generator.generateKnapsack(10000);
+        int maxCapacity = 20000;
+        AbstractKnapsackGenerator generator = new LinearKnapsackGenerator(100, 5000, 0.2f);
+        KnapsackItem[] knapsack = generator.generateKnapsack(10000);
+        // outputLinearGeneratorLatex(maxCapacity, 10000, 100, 5000, 0.2f);
 
         /* test 39s branch and bound. seed = 1445350665030L*/
         // int maxCapacity = 20000;
@@ -63,7 +66,13 @@ public class Main {
         // int maxCapacity = 20000;
         // AbstractKnapsackGenerator generator = new LinearKnapsackGenerator(10, 10, 1f);
         // KnapsackItem[] knapsack = generator.generateKnapsack(1000);
+        // outputLinearGeneratorLatex(maxCapacity, 1000, 10, 10, 1f);
 
+        /* test */
+        // int maxCapacity = 50000;
+        // AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(1, 10, 1, 50);
+        // // generator.setSeed(1445273741725L);
+        // KnapsackItem[] knapsack = generator.generateKnapsack(100000);
 
 
 
@@ -77,17 +86,17 @@ public class Main {
         // AbstractKnapsackSolver solverBab = new BabKnapsackSolver(knapsack, maxCapacity);
         // solveKnapsack(solverBab);
 
+        /* BACKWARD DYNAMIC PROGRAM */
+        AbstractKnapsackSolver solverDP = new SimpleDynamicKnapsackSolver(knapsack, maxCapacity);
+        solveKnapsack(solverDP);
+
         /* FORWARD DYNAMIC PROGRAM */
-        // AbstractKnapsackSolver solverDPF = new ForwardDynamicKnapsackSolver(knapsack, maxCapacity);
-        // solveKnapsack(solverDPF);
+        AbstractKnapsackSolver solverDPF = new ForwardDynamicKnapsackSolver(knapsack, maxCapacity);
+        solveKnapsack(solverDPF);
 
         /* CORE DYNAMIC PROGRAM */
-        // AbstractKnapsackSolver solverCore = new CoreDynamicKnapsackSolver(knapsack, maxCapacity);
-        // solveKnapsack(solverCore);
-
-        /* BACKWARD DYNAMIC PROGRAM */
-        // AbstractKnapsackSolver solverDP = new SimpleDynamicKnapsackSolver(knapsack, maxCapacity);
-        // solveKnapsack(solverDP);
+        AbstractKnapsackSolver solverCore = new CoreDynamicKnapsackSolver(knapsack, maxCapacity);
+        solveKnapsack(solverCore);
 
         /* GRAPH SHORTEST LENGTH */
         // AbstractKnapsackSolver solverGraph = new GraphKnapsackSolver(knapsack, maxCapacity);
@@ -112,7 +121,7 @@ public class Main {
         System.out.println("TIME TOTAL : "+Duration.between(startSolve, end));
 
         System.out.println("Solution value : "+solutionValue);
-        // System.out.println("Solution : "+Arrays.toString(solution));
+        System.out.println("Solution : "+Arrays.toString(solution));
 
         try {
             String memoryUsage = new String();
@@ -128,5 +137,29 @@ public class Main {
        } catch (Throwable t) {
             System.err.println("Exception in agent: " + t);
        }
+
+       // System.out.println(solver.shortName+" & "+Duration.between(startSolve, end)+" & Faible \\\\");
+    }
+
+    public static void outputRandomGeneratorLatex(int capacity, int nbItem, int minWeight, int maxWeight, int minProfit, int maxProfit) {
+        System.out.println("\\begin{tabular}{|c|c|c|c|c|c|}");
+        System.out.println("\\hline");
+        System.out.println("Capacité & Objets & \\multicolumn{2}{c|}{Poids} & \\multicolumn{2}{c|}{Profit} \\\\");
+        System.out.println("\\cline{3-6}");
+        System.out.println("& & min & max & min & max \\\\");
+        System.out.println("\\hline");
+        System.out.println(capacity+" & "+nbItem+" & "+minWeight+" & "+maxWeight+" & "+minProfit+" & "+maxProfit+" \\\\");
+        System.out.println("\\hline");
+        System.out.println("\\end{tabular}");
+    }
+
+    public static void outputLinearGeneratorLatex(int capacity, int nbItem, int initialWeight, int initialProfit, float correlation) {
+        System.out.println("\\begin{tabular}{|c|c|c|c|c|}");
+        System.out.println("\\hline");
+        System.out.println("Capacité & Objets & Poids initial & Profit initial & Corrélation \\\\");
+        System.out.println("\\hline");
+        System.out.println(capacity+" & "+nbItem+" & "+initialWeight+" & "+initialProfit+" & "+correlation+" \\\\");
+        System.out.println("\\hline");
+        System.out.println("\\end{tabular}");
     }
 }

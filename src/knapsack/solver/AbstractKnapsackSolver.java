@@ -13,6 +13,7 @@ public abstract class AbstractKnapsackSolver {
     protected int solutionValue;
 
     protected String solverName;
+    public String shortName;
 
     protected abstract int solveInstance();
     

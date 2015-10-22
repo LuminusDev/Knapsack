@@ -24,6 +24,7 @@ public class GraphKnapsackSolver extends AbstractKnapsackSolver {
     public GraphKnapsackSolver(KnapsackItem[] instance, int capacity) {
         super(instance, capacity);
         this.solverName = "PCC in Graph";
+        this.shortName = "Graph";
         this.maxProfit = Arrays.stream(this.instance)
             .mapToInt(e -> e.profit)
             .max()

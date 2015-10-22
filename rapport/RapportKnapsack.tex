@@ -109,16 +109,16 @@ Un modèle du problème est aussi réalisé afin de résoudre les instances dans
 
 \subsection{Instance critique du Branch And Bound}
 
-\paragraph{}Paramètres de l'instance
+\paragraph{}Paramètres de l'instance (générateur aléatoire)
 
 \begin{tabular}{|c|c|c|c|c|c|}
-	\hline
-	Capacité & Objets & \multicolumn{2}{c|}{Poids} & \multicolumn{2}{c|}{Profit} \\
-	\cline{3-6}
-		& & min & max & min & max \\
-	\hline
-	400 & 200 & 10 & 100 & 1 & 200 \\
-	\hline
+\hline
+Capacité & Objets & \multicolumn{2}{c|}{Poids} & \multicolumn{2}{c|}{Profit} \\
+\cline{3-6}
+& & min & max & min & max \\
+\hline
+2000 & 400 & 40 & 44 & 120 & 140 \\
+\hline
 \end{tabular}
 
 \begin{figure}[!h]
@@ -128,32 +128,29 @@ Un modèle du problème est aussi réalisé afin de résoudre les instances dans
 	\hline
 	 & Temps & Mémoire \\
 	\hline
-	BaB & 0.002s & Faible \\
-	Backward & 0.009s & Moyenne \\
-	Forward & 0.052s & Moyenne \\
-	Core & 0.006s & Faible \\
-	\textbf{Graphe} & 12.892s & Elevée \\
-	CPlex & 80 & 20 \\
+	\textbf{BaB} & >10min & Faible \\
+	Backward & 0.018s & Moyenne \\
+	Forward & 0.197s & Faible \\
+	Core & >10min & Moyenne \\
+	Graphe & >10min & Élevée \\
 	\hline
 \end{tabular}
 }{\caption{Résultats}}
 \end{floatrow}
 \end{figure}
 
-\paragraph{}Remarques
+\paragraph{}Remarques : corrélation forte
 
 \subsection{Instance critique du programme dynamique (simple backward)}
 
-\paragraph{}Paramètres de l'instance
+\paragraph{}Paramètres de l'instance (générateur linéaire)
 
-\begin{tabular}{|c|c|c|c|c|c|}
-	\hline
-	Capacité & Objets & \multicolumn{2}{c|}{Poids} & \multicolumn{2}{c|}{Profit} \\
-	\cline{3-6}
-		& & min & max & min & max \\
-	\hline
-	400 & 200 & 10 & 100 & 1 & 200 \\
-	\hline
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Capacité & Objets & Poids initial & Profit initial & Corrélation \\
+\hline
+20000 & 10000 & 100 & 5000 & -0.2 \\
+\hline
 \end{tabular}
 
 
@@ -166,19 +163,18 @@ Un modèle du problème est aussi réalisé afin de résoudre les instances dans
 	\hline
 	 & Temps & Mémoire \\
 	\hline
-	BaB & 0.002s & Faible \\
-	Backward & 0.009s & Moyenne \\
-	Forward & 0.052s & Moyenne \\
-	Core & 0.006s & Faible \\
-	\textbf{Graphe} & 12.892s & Elevée \\
-	CPlex & 80 & 20 \\
+	BaB & >10min & Faible \\
+	\textbf{Backward} & 0.937s & Élevée \\
+	Forward & 0.011s & Faible \\
+	Core & 0.083s & Faible \\
+	Graphe & >10m & Élevée \\
 	\hline
 \end{tabular}
 }{\caption{Résultats}}
 \end{floatrow}
 \end{figure}
 
-\paragraph{}Remarques
+\paragraph{}Remarques : fortement corrélé; régulier
 
 \subsection{Instance critique du programme dynamique (forward avec liste)}
 
@@ -201,10 +197,9 @@ Un modèle du problème est aussi réalisé afin de résoudre les instances dans
 	\hline
 	BaB & 0.002s & Faible \\
 	Backward & 0.116s & Élevée \\
-	Forward & 4m14s & Moyenne \\
+	\textbf{Forward} & 4m14s & Moyenne \\
 	Core & >10m & Moyenne \\
-	\textbf{Graphe} & >10m & Élevée \\
-	CPlex & 80 & 20 \\
+	Graphe & >10m & Élevée \\
 	\hline
 \end{tabular}
 }{\caption{Résultats}}
@@ -215,16 +210,14 @@ Un modèle du problème est aussi réalisé afin de résoudre les instances dans
 
 \subsection{Instance critique du programme dynamique (core avec liste)}
 
-\paragraph{}Paramètres de l'instance (générateur aléatoire)
+\paragraph{}Paramètres de l'instance (générateur linéaire)
 
-\begin{tabular}{|c|c|c|c|c|c|}
-	\hline
-	Capacité & Objets & \multicolumn{2}{c|}{Poids} & \multicolumn{2}{c|}{Profit} \\
-	\cline{3-6}
-		& & min & max & min & max \\
-	\hline
-	400 & 200 & 10 & 100 & 1 & 200 \\
-	\hline
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Capacité & Objets & Poids initial & Profit initial & Corrélation \\
+\hline
+20000 & 10000 & 100 & 5000 & 0.2 \\
+\hline
 \end{tabular}
 
 \begin{figure}[!h]
@@ -234,12 +227,11 @@ Un modèle du problème est aussi réalisé afin de résoudre les instances dans
 	\hline
 	 & Temps & Mémoire \\
 	\hline
-	BaB & 0.002s & Faible \\
-	Backward & 0.009s & Moyenne \\
-	Forward & 0.052s & Moyenne \\
-	Core & 0.006s & Faible \\
-	\textbf{Graphe} & 12.892s & Élevée \\
-	CPlex & 80 & 20 \\
+	BaB & >10min & Faible \\
+	Backward & 0.892s & Élevée \\
+	Forward & 0.137s & Faible \\
+	\textbf{Core} & 6.498s & Moyenne \\
+	Graphe & >10m & Élevée \\
 	\hline
 \end{tabular}
 }{\caption{Résultats}}
@@ -273,8 +265,7 @@ Un modèle du problème est aussi réalisé afin de résoudre les instances dans
 	Backward & 0.009s & Moyenne \\
 	Forward & 0.052s & Moyenne \\
 	Core & 0.006s & Faible \\
-	\textbf{Graphe} & 12.892s & Elevée \\
-	CPlex & 80 & 20 \\
+	\textbf{Graphe} & 12.892s & Élevée \\
 	\hline
 \end{tabular}
 }{\caption{Résultats}}
