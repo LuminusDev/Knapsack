@@ -17,10 +17,10 @@ public class Main {
     public static void main(String[] args) {
 
         /* test */
-        // int maxCapacity = 20;
-        // AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(1, 10, 1, 15);
+        // int maxCapacity = 20000;
+        // AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(1, 20000, 1, 15000);
         // generator.setSeed(1445273741725L);
-        // KnapsackItem[] knapsack = generator.generateKnapsack(10);
+        // KnapsackItem[] knapsack = generator.generateKnapsack(10000);
 
         /* test 13s graph. seed = 1445263733912L */
         // int maxCapacity = 400;
@@ -31,10 +31,10 @@ public class Main {
         /* test 24s branch and bound. seed = 1445263039090L */
         /* test 8s branch and bound. seed = 1445262961192L */
         /* test 0.2s branch and bound. seed = 1445263002833L */
-        // int maxCapacity = 2000;
-        // AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(40, 44, 1, 300);
-        // generator.setSeed(1445263039090L);
-        // KnapsackItem[] knapsack = generator.generateKnapsack(400);
+        int maxCapacity = 2000;
+        AbstractKnapsackGenerator generator = new RandomKnapsackGenerator(40, 44, 1, 300);
+        generator.setSeed(1445263002833L);
+        KnapsackItem[] knapsack = generator.generateKnapsack(400);
 
         /* test VERY LONG branch and bound. seed = 1445262961192L */
         // int maxCapacity = 2000;
@@ -50,9 +50,9 @@ public class Main {
         // outputLinearGeneratorLatex(maxCapacity, 10000, 100, 5000, -0.2f);
 
         /* test linear 1s backward 6s core */
-        int maxCapacity = 20000;
-        AbstractKnapsackGenerator generator = new LinearKnapsackGenerator(100, 5000, 0.2f);
-        KnapsackItem[] knapsack = generator.generateKnapsack(10000);
+        // int maxCapacity = 20000;
+        // AbstractKnapsackGenerator generator = new LinearKnapsackGenerator(100, 5000, 0.2f);
+        // KnapsackItem[] knapsack = generator.generateKnapsack(10000);
         // outputLinearGeneratorLatex(maxCapacity, 10000, 100, 5000, 0.2f);
 
         /* test 39s branch and bound. seed = 1445350665030L*/
@@ -83,8 +83,8 @@ public class Main {
         // CplexDatFile.createFile(knapsack, maxCapacity, "iclForwardCoreLong");
 
         /* BRANCH AND BOUND */
-        // AbstractKnapsackSolver solverBab = new BabKnapsackSolver(knapsack, maxCapacity);
-        // solveKnapsack(solverBab);
+        AbstractKnapsackSolver solverBab = new BabKnapsackSolver(knapsack, maxCapacity);
+        solveKnapsack(solverBab);
 
         /* BACKWARD DYNAMIC PROGRAM */
         AbstractKnapsackSolver solverDP = new SimpleDynamicKnapsackSolver(knapsack, maxCapacity);
@@ -121,7 +121,7 @@ public class Main {
         System.out.println("TIME TOTAL : "+Duration.between(startSolve, end));
 
         System.out.println("Solution value : "+solutionValue);
-        System.out.println("Solution : "+Arrays.toString(solution));
+        // System.out.println("Solution : "+Arrays.toString(solution));
 
         try {
             String memoryUsage = new String();

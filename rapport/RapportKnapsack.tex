@@ -65,7 +65,7 @@ L'objectif du projet est d'implémenter différentes méthodes de résolution du
 	\item Programme Dynamique (Core avec liste)
 	\item Plus court chemin dans un graphe
 \end{itemize}
-Un modèle du problème est aussi réalisé afin de résoudre les instances dans le solveur CPlex.
+Un modèle du problème est aussi réalisé afin de résoudre les instances dans le solveur CPlex. Cela permet de vérifier les valeurs des solutions des algorithmes implémentés.
 
 \paragraph{}Le Branch And Bound utilise des bornes supérieures et inférieures pour couper des branches de l'arbre d'énumération des solutions, sur lequel on réalise un parcours en profondeur. Une borne supérieure est donné par la valeur de la solution partielle actuelle dans l'arbre, à laquelle on ajoute la valeur de la relaxation linéaire du problème partielle restant. Une borne inférieure correspond à la valeur de la meilleure solution complète trouvée à l'instant.
 
@@ -140,6 +140,38 @@ Capacité & Objets & \multicolumn{2}{c|}{Poids} & \multicolumn{2}{c|}{Profit} \\
 \end{figure}
 
 \paragraph{}Remarques : corrélation forte
+
+\paragraph{}Paramètres de l'instance (générateur aléatoire)
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Capacité & Objets & \multicolumn{2}{c|}{Poids} & \multicolumn{2}{c|}{Profit} \\
+\cline{3-6}
+& & min & max & min & max \\
+\hline
+2000 & 400 & 40 & 44 & 1 & 300 \\
+\hline
+\end{tabular}
+
+\begin{figure}[!h]
+\begin{floatrow}
+\capbtabbox{
+\begin{tabular}{|l|r|r|r|r|r|r|}
+	\hline
+	 & Temps1 & Mémoire1 & Temps2 & Mémoire2 & Temps3 & Mémoire3 \\
+	\hline
+	\textbf{BaB} & 22.595s & Faible & 7.969s & Faible & 0.015s & Faible \\
+	Backward & 0.047s & Moyenne & 0.062s & Moyenne & 0.062s & Moyenne \\
+	Forward & 0.031s & Faible & 0.047s & Faible & 0.11s & Faible \\
+	Core & 0.063s & Faible & 0.047s & Faible & 0.015s & Faible \\
+	Graphe & >10min & Élevée & >10min & Élevée & >10min & Élevée \\
+	\hline
+\end{tabular}
+}{\caption{Résultats}}
+\end{floatrow}
+\end{figure}
+
+\paragraph{}Remarques : 3 aléatoires avec les mêmes paramètres de génération mais une seed différente
 
 \subsection{Instance critique du programme dynamique (simple backward)}
 
