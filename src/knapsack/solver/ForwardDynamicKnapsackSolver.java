@@ -14,8 +14,6 @@ public class ForwardDynamicKnapsackSolver extends AbstractKnapsackSolver {
 
     public ForwardDynamicKnapsackSolver(KnapsackItem[] instance, int capacity) {
         super(instance, capacity);
-        this.solverName = "Forward Dynamic Program";
-        this.shortName = "Forward";
     }
 
     private boolean stateIsDominated(ItemState testedItem, ItemState initialItem) {

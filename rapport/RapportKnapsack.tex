@@ -103,206 +103,149 @@ Un modèle du problème est aussi réalisé afin de résoudre les instances dans
 
 \paragraph{}Génération des instances avec un générateur pseudo-aléatoire possédant comme paramètres le poids min et max d'un objet, le profit min et max d'un objet. Générateur linéaire, avec un profit proportionnel au poids. Permet de créer des instances fortement corrélées (tous avec le même ratio profit/poids par exemple).
 
-\paragraph{}Comparaisons sur le temps d'exécution ainsi que sur l'empreinte mémoire.
+\subsection{Données}
 
-\paragraph{}Explications des instances critiques
 
-\subsection{Instance critique du Branch And Bound}
 
-\paragraph{}Paramètres de l'instance (générateur aléatoire)
-
-\begin{tabular}{|c|c|c|c|c|c|}
-\hline
-Capacité & Objets & \multicolumn{2}{c|}{Poids} & \multicolumn{2}{c|}{Profit} \\
-\cline{3-6}
-& & min & max & min & max \\
-\hline
-2000 & 400 & 40 & 44 & 120 & 140 \\
-\hline
-\end{tabular}
+\paragraph{}Dans ce cas, poids < 25 percent capacite et profit < 50 percent capacite. 10 itérations
 
 \begin{figure}[!h]
 \begin{floatrow}
 \capbtabbox{
-\begin{tabular}{|l|r|r|}
+\begin{tabular}{|l|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|}
 	\hline
-	 & Temps & Mémoire \\
+	 & \multicolumn{3}{c|}{Bab} & \multicolumn{3}{c|}{Backward} & \multicolumn{3}{c|}{Forward} & \multicolumn{3}{c|}{Core} & \multicolumn{3}{c|}{Graphe} \\
 	\hline
-	\textbf{BaB} & \textgreater10min & Faible \\
-	Backward & 0.018s & Moyenne \\
-	Forward & 0.197s & Faible \\
-	Core & \textgreater10min & Moyenne \\
-	Graphe & \textgreater10min & Élevée \\
+	 & mean & min & max & mean & min & max & mean & min & max & mean & min & max & mean & min & max
+	\hline
+	(200,400) & 0 & 0 & 0 & 1 & 0 & 9 & 5 & 0 & 53 & 0 & 0 & 4 & 15767 & 13476 & 17309
+	\hline
+	(400,800) & 0 & 0 & 1 & 4 & 0 & 27 & 7 & 0 & 58 & 1 & 0 & 7 & 254781 & 194129 & 279740
+	\hline
+	(800,1600) & 0 & 0 & 1 & 9 & 0 & 19 & 6 & 0 & 48 & 2 & 0 & 9 & \textgreater10min & \textgreater10min & \textgreater10min
+	\hline
+	(1600,3200) & 0 & 0 & 0 & 14 & 0 & 47 & 15 & 0 & 62 & 0 & 0 & 0 & \textgreater10min & \textgreater10min & \textgreater10min
+	\hline
+	(16000,32000) & 0 & 0 & 1 & OoM & OoM & OoM & 50 & 15 & 110 & 19 & 0 & 62 & OoM & OoM & OoM
+	\hline
+	(160000,320000) & 18 & 15 & 47 & OoM & OoM & OoM & 266 & 109 & 594 & 128 & 62 & 289 & OoM & OoM & OoM
+	\hline
+	(320000,640000) & 36 & 5 & 54 & OoM & OoM & OoM & 503 & 227 & 1414 & 349 & 118 & 612 & OoM & OoM & OoM
+	\hline
+	(640000,1280000) & 101 & 26 & 166 & OoM & OoM & OoM & 994 & 613 & 1696 & 1527 & 257 & 2826 & OoM & OoM & OoM
+	\hline
+	(1280000,2560000) & 142 & 44 & 321 & OoM & OoM & OoM & 1030 & 630 & 2462 & 2098 & 469 & 5542 & OoM & OoM & OoM
 	\hline
 \end{tabular}
 }{\caption{Résultats}}
 \end{floatrow}
 \end{figure}
 
-\paragraph{}Remarques : corrélation forte
+\paragraph{}A partir de 160000 items, le core ne donne pas forcément la bonne solution (dû à l'utilisation du type "int" qui fausse le résultat de la relaxation linéaire sur de trop grand nombre).
 
-\paragraph{}Paramètres de l'instance (générateur aléatoire)
 
-\begin{tabular}{|c|c|c|c|c|c|}
-\hline
-Capacité & Objets & \multicolumn{2}{c|}{Poids} & \multicolumn{2}{c|}{Profit} \\
-\cline{3-6}
-& & min & max & min & max \\
-\hline
-2000 & 400 & 40 & 44 & 1 & 300 \\
-\hline
-\end{tabular}
+
+
+
+\paragraph{}Dans ce cas, poids = profit. Lineaire avec (1,1)(2,2)(3,3)... 10 itérations
 
 \begin{figure}[!h]
 \begin{floatrow}
 \capbtabbox{
-\begin{tabular}{|l|r|r|r|r|r|r|}
+\begin{tabular}{|l|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|}
 	\hline
-	 & Temps1 & Mémoire1 & Temps2 & Mémoire2 & Temps3 & Mémoire3 \\
+	 & \multicolumn{3}{c|}{Bab} & \multicolumn{3}{c|}{Backward} & \multicolumn{3}{c|}{Forward} & \multicolumn{3}{c|}{Core} & \multicolumn{3}{c|}{Graphe} \\
 	\hline
-	\textbf{BaB} & 22.595s & Faible & 7.969s & Faible & 0.015s & Faible \\
-	Backward & 0.047s & Moyenne & 0.062s & Moyenne & 0.062s & Moyenne \\
-	Forward & 0.031s & Faible & 0.047s & Faible & 0.11s & Faible \\
-	Core & 0.063s & Faible & 0.047s & Faible & 0.015s & Faible \\
-	Graphe & \textgreater10min & Élevée & \textgreater10min & Élevée & \textgreater10min & Élevée \\
+	 & mean & min & max & mean & min & max & mean & min & max & mean & min & max & mean & min & max
+	\hline
+	(32,64) & 0 & 0 & 1 & 0 & 0 & 2 & 6 & 0 & 51 & 3944 & 3874 & 4088 & 24 & 10 & 130
+	\hline
+	(33,66) & 0 & 0 & 0 & 0 & 0 & 2 & 13 & 2 & 55 & 6076 & 5898 & 6180 & 40 & 13 & 137
+	\hline
+	(40,80) & 0 & 0 & 0 & 0 & 0 & 2 & 36 & 13 & 55 & 81245 & 83478 & 84600 & 219 & 184 & 256
+	\hline
+	(50,100) & 0 & 0 & 0 & 0 & 0 & 2 & 6 & 1 & 52 & \textgreater10min & \textgreater10min & \textgreater10min & 52 & 25 & 195
+	\hline
+	(10000,20000) & 1 & 0 & 4 & 664 & 454 & 968 & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min & OoM & OoM & OoM
+	\hline
+	(100000,200000) & 4 & 2 & 12 & OoM & OoM & OoM & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min & OoM & OoM & OoM
+	\hline
+	(10000000,20000000) & 391 & 189 & 1940 & OoM & OoM & OoM & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min & OoM & OoM & OoM
 	\hline
 \end{tabular}
 }{\caption{Résultats}}
 \end{floatrow}
 \end{figure}
 
-\paragraph{}Remarques : 3 aléatoires avec les mêmes paramètres de génération mais une seed différente
+\paragraph{}
 
-\subsection{Instance critique du programme dynamique (simple backward)}
 
-\paragraph{}Paramètres de l'instance (générateur linéaire)
 
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-Capacité & Objets & Poids initial & Profit initial & Corrélation \\
-\hline
-20000 & 10000 & 100 & 5000 & -0.2 \\
-\hline
-\end{tabular}
+
+\paragraph{}Dans ce cas, poids(i) = minPoids+i. profit(i) = minProfit+i*0.2. Lineaire. 10 itérations
 
 \begin{figure}[!h]
 \begin{floatrow}
 \capbtabbox{
-\begin{tabular}{|l|r|r|}
+\begin{tabular}{|l|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|}
 	\hline
-	 & Temps & Mémoire \\
+	 & \multicolumn{3}{c|}{Bab} & \multicolumn{3}{c|}{Backward} & \multicolumn{3}{c|}{Forward} & \multicolumn{3}{c|}{Core} & \multicolumn{3}{c|}{Graphe} \\
 	\hline
-	BaB & \textgreater10min & Faible \\
-	\textbf{Backward} & 0.937s & Élevée \\
-	Forward & 0.011s & Faible \\
-	Core & 0.083s & Faible \\
-	Graphe & \textgreater10min & Élevée \\
+	 & mean & min & max & mean & min & max & mean & min & max & mean & min & max & mean & min & max
+	\hline
+	(100,500) & 0 & 0 & 0 & 1 & 0 & 5 & 6 & 0 & 53 & 34 & 25 & 73 & 5855 & 4468 & 6069
+	\hline
+	(200,1000) & 0 & 0 & 0 & 2 & 0 & 11 & 5 & 0 & 53 & 5 & 2 & 18 & 74278 & 71470 & 76133
+	\hline
+	(1000,5000) & 0 & 0 & 1 & 15 & 6 & 36 & 8 & 2 & 60 & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min
+	\hline
+	(10000,50000) & 0 & 0 & 2 & OoM & OoM & OoM & 27 & 7 & 84 & \textgreater10min & \textgreater10min & \textgreater10min & OoM & OoM & OoM
+	\hline
+	(100000,500000) & 2 & 2 & 8 & OoM & OoM & OoM & 130 & 65 & 370 & \textgreater10min & \textgreater10min & \textgreater10min & OoM & OoM & OoM
+	\hline
+	(220000,1100000) & 35 & 20 & 80 & OoM & OoM & OoM & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min & OoM & OoM & OoM
+	\hline
+	(2000000,10000000) & 281 & 149 & 697 & OoM & OoM & OoM & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min & OoM & OoM & OoM
+	\hline
+	(5000000,25000000) & 390 & 354 & 531 & OoM & OoM & OoM & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min & \textgreater10min & OoM & OoM & OoM
 	\hline
 \end{tabular}
 }{\caption{Résultats}}
 \end{floatrow}
 \end{figure}
 
-\paragraph{}Remarques : fortement corrélé; régulier
+\paragraph{}
 
-\subsection{Instance critique du programme dynamique (forward avec liste)}
 
-\paragraph{}Paramètres de l'instance (générateur linéaire)
 
-\begin{tabular}{|c|c|c|c|c|}
-	\hline
-	Capacité & Objets & Poids initial & Profit initial & Corrélation \\
-	\hline
-	20000 & 1000 & 10 & 10 & 1 \\
-	\hline
-\end{tabular}
 
-\paragraph{}Remarques
+\paragraph{}Dans ce cas, poids dans {nbItems/10, nbItems/10+nbItems/100} et profit entre 1 et nbItems. 10 itérations
 
 \begin{figure}[!h]
 \begin{floatrow}
 \capbtabbox{
-\begin{tabular}{|l|r|r|}
+\begin{tabular}{|l|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|}
 	\hline
-	 & Temps & Mémoire \\
+	 & \multicolumn{3}{c|}{Bab} & \multicolumn{3}{c|}{Backward} & \multicolumn{3}{c|}{Forward} & \multicolumn{3}{c|}{Core} & \multicolumn{3}{c|}{Graphe} \\
 	\hline
-	BaB & 0.002s & Faible \\
-	Backward & 0.116s & Élevée \\
-	\textbf{Forward} & 4m14s & Moyenne \\
-	Core & \textgreater10min & Moyenne \\
-	Graphe & \textgreater10min & Élevée \\
+	 & mean & min & max & mean & min & max & mean & min & max & mean & min & max & mean & min & max
+	\hline
+	(200,1000) & 6 & 0 & 52 & 3 & 0 & 16 & 6 & 0 & 49 & 1 & 0 & 5 & 70896 & 56038 & 73046
+	\hline
+	(400,2000) & 3095 & 0 & 20178 & 4 & 1 & 16 & 23 & 1 & 82 & 8 & 0 & 44 & \textgreater10min & \textgreater10min & \textgreater10min
+	\hline
+	(800,4000) & 4280 & 0 & 31651 & 10 & 5 & 35 & 37 & 2 & 123 & 16 & 3 & 71 & \textgreater10min & \textgreater10min & \textgreater10min
+	\hline
+	(1600,8000) & \textgreater10min & 0 & \textgreater10min & 41 & 21 & 83 & 1284 & 1 & 2857 & 745 & 1 & 3432 & \textgreater10min & \textgreater10min & \textgreater10min
+	\hline
+	(10000,50000) & \textgreater10min & \textgreater10min & \textgreater10min & OoM & OoM & OoM & 19035 & 7712 & 31749 & 170000 & 170000 & 170000 & \textgreater10min & \textgreater10min & \textgreater10min
 	\hline
 \end{tabular}
 }{\caption{Résultats}}
 \end{floatrow}
 \end{figure}
 
-\paragraph{}Remarques
+\paragraph{}A partir de 160000 items, le core ne donne pas forcément la bonne solution (dû à l'utilisation du type "int" qui fausse le résultat de la relaxation linéaire sur de trop grand nombre).
 
-\subsection{Instance critique du programme dynamique (core avec liste)}
-
-\paragraph{}Paramètres de l'instance (générateur linéaire)
-
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-Capacité & Objets & Poids initial & Profit initial & Corrélation \\
-\hline
-20000 & 10000 & 100 & 5000 & 0.2 \\
-\hline
-\end{tabular}
-
-\begin{figure}[!h]
-\begin{floatrow}
-\capbtabbox{
-\begin{tabular}{|l|r|r|}
-	\hline
-	 & Temps & Mémoire \\
-	\hline
-	BaB & \textgreater10min & Faible \\
-	Backward & 0.892s & Élevée \\
-	Forward & 0.137s & Faible \\
-	\textbf{Core} & 6.498s & Moyenne \\
-	Graphe & \textgreater10min & Élevée \\
-	\hline
-\end{tabular}
-}{\caption{Résultats}}
-\end{floatrow}
-\end{figure}
-
-\paragraph{}Remarques
-
-\subsection{Instance critique du plus court chemin dans un graphe}
-
-\paragraph{}Paramètres de l'instance
-
-\begin{tabular}{|c|c|c|c|c|c|}
-	\hline
-	Capacité & Objets & \multicolumn{2}{c|}{Poids} & \multicolumn{2}{c|}{Profit} \\
-	\cline{3-6}
-		& & min & max & min & max \\
-	\hline
-	400 & 200 & 10 & 100 & 1 & 200 \\
-	\hline
-\end{tabular}
-
-\begin{figure}[!h]
-\begin{floatrow}
-\capbtabbox{
-\begin{tabular}{|l|r|r|}
-	\hline
-	 & Temps & Mémoire \\
-	\hline
-	BaB & 0.002s & Faible \\
-	Backward & 0.009s & Moyenne \\
-	Forward & 0.052s & Moyenne \\
-	Core & 0.006s & Faible \\
-	\textbf{Graphe} & 12.892s & Élevée \\
-	\hline
-\end{tabular}
-}{\caption{Résultats}}
-\end{floatrow}
-\end{figure}
-
-\paragraph{}Remarques
 
 \end{document}

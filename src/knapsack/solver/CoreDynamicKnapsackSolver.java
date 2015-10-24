@@ -14,8 +14,6 @@ public class CoreDynamicKnapsackSolver extends AbstractKnapsackSolver {
 
     public CoreDynamicKnapsackSolver(KnapsackItem[] instance, int capacity) {
         super(instance, capacity);
-        this.solverName = "Core Dynamic Program";
-        this.shortName = "Core";
     }
 
     private boolean stateIsDominated(ItemStateCore testedItem, ItemStateCore initialItem) {

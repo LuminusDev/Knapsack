@@ -6,8 +6,6 @@ public class BabKnapsackSolver extends AbstractKnapsackSolver {
 
     public BabKnapsackSolver(KnapsackItem[] instance, int capacity) {
         super(instance, capacity);
-        this.solverName = "Branch And Bound";
-        this.shortName = "BaB";
     }
     
     protected int solveInstance() {
