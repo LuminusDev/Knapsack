@@ -57,6 +57,17 @@ L'objectif du projet est d'implémenter différentes méthodes de résolution du
 
 \paragraph{}Explication du problème de sac à dos, puis sac à dos binaire.
 
+\paragraph{}Le problème du sac à dos consiste ranger des objets, possédant chacun un poids et un profit, dans un sac à dos dont la capacité totale est limitée. On cherche alors à maximiser le profit total des objets que l'on met dans le sac à dos, sans que le poids total ne dépasse sa capacité.
+\paragraph{}Le sac à dos \textbf{binaire} est une variante, qui ne permet de prendre un objet que 0 ou 1 fois.
+
+\paragraph{}On peut modéliser ce problème par un programme linéaire en nombre entier :
+
+\[\textrm{max} \sum_{i=1}^{n} p_i x_i\]
+\[\sum_{i=1}^{n} w_i x_i \leq W\]
+\[x_i \in \lbrace0,1\rbrace\ \forall{i}\]
+
+\paragraph{}Ce problème est \textbf{NP-Difficile} au sens faible du terme, car il existe un algorithme le résolvant en un temps pseudo-polynomial (qui dépend de la valeur des données, en l'occurrence la capacité du sac). 
+
 \subsection{Méthodes de résolution}
 
 \paragraph{}Pour résoudre ce problème, plusieurs algorithmes ont été implémenté.
@@ -69,21 +80,29 @@ L'objectif du projet est d'implémenter différentes méthodes de résolution du
 \end{itemize}
 Un modèle du problème est aussi réalisé afin de résoudre les instances dans le solveur CPlex. Cela permet de vérifier les valeurs des solutions des algorithmes implémentés.
 
-\paragraph{}Le Branch And Bound utilise des bornes supérieures et inférieures pour couper des branches de l'arbre d'énumération des solutions, sur lequel on réalise un parcours en profondeur. Une borne supérieure est donné par la valeur de la solution partielle actuelle dans l'arbre, à laquelle on ajoute la valeur de la relaxation linéaire du problème partielle restant. Une borne inférieure correspond à la valeur de la meilleure solution complète trouvée à l'instant.
+\paragraph{}Le \textbf{Branch And Bound} utilise des bornes supérieures et inférieures pour couper des branches de l'arbre d'énumération des solutions, sur lequel on réalise un parcours en profondeur. Une borne supérieure est donné par la valeur de la solution partielle actuelle dans l'arbre, à laquelle on ajoute la valeur de la relaxation linéaire du problème partielle restant. Une borne inférieure correspond à la valeur de la meilleure solution complète trouvée à l'instant.
 
-\paragraph{}Programme Dynamique Simple backward.
+\paragraph{}Le \textbf{programme dynamique en backward} réalise un parcours des solutions aux problèmes partiels du sac à dos binaire, ne gardant que les meilleurs solutions. Grâce à la décomposabilité du problème initial et à une formule de récurrence, on obtient la solution à notre problème à partir des solutions partielles.
 
-\paragraph{}Programme Dynamique Forward avec liste.
+\paragraph{}Le \textbf{programme dynamique en forward} suit le même principe que la méthode en backward, mais utilise des listes pour ne garder les résultats que de états dominants. Cela permet de réduire de manière drastique l'empreinte mémoire du programme.
 
-\paragraph{}Programme Dynamique Core avec liste.
+\paragraph{}Le \textbf{programme dynamique basé sur le core} est une méthode utilisant le principe de \textit{core} dans un problème de sac à dos, dont l'on augmente la taille pour qu'il couvre l'ensemble du sac à dos, et ainsi obtenir la solution.
 
-\paragraph{}Plus court chemin graphe.
+\paragraph{}La méthode du \textbf{plus court chemin dans un graphe} est initialement un problème de flot maximum transformé, afin d'utiliser l'algorithme de Dijkstra. Le graphe est créé selon le même principe que la programmation dynamique.
 
 \section{Implémentation des algorithmes de résolution du problème de sac à dos binaire}
 
 \subsection{Branch And Bound spécialisé}
 
-\paragraph{}
+\paragraph{}L'algorithme du branch-and-bound implémenté est celui de \textit{Horowitz et Sahni (1974)}, consistant en un parcours en profondeur amélioré sur l'arbre de recherche.
+
+\paragraph{}Pour réaliser ce branch-and-bound sur le problème de sac à dos binaire, le choix du branchement (c'est à dire la variable que l'on fixe) se fait sur la mise de l'objet dans le sac, donc 1 si on le prend, 0 sinon. La profondeur de l'arbre de recherche correspond ainsi au nombre d'objets à traiter.
+
+\paragraph{}On trie premièrement les objets par ordre décroissant suivant leur ratio profit sur poids. On réalise ensuite des itérations de fixation à 1 pour les objets tant que l'on peut les mettre dans le sac, sinon à 0 en recalculant la borne supérieure, correspondant à la valeur de la solution partielle actuelle à laquelle on ajoute la valeur de la solution du problème linéaire relâché par rapport à la capacité et aux objets restants.
+
+\paragraph{}Lorsque l'on arrive sur une feuille de l'arbre de recherche, garde la solution si c'est la meilleure que l'on a trouvé, puis on remonte dans l'arbre jusqu'à une variable fixée à 1 que l'on passe alors à 0, et à partir de laquelle on redémarre une descente.
+
+\paragraph{}L'avantage de cet algorithme est qu'il permet d'obtenir une borne inférieure en $\mathcal{O}(n)$, $n$ étant le nombre d'objet. De plus, cette borne correspondant à la solution d'un algorithme glouton consistant à prendre dans l'ordre les objets ayant le meilleur ratio profit sur poids s'il rentre dans le sac. Cette borne, suivant les instances de problème, permet de couper rapidement des branches de l'arbre de recherche, en adéquation avec la borne supérieure.
 
 \subsection{Programme dynamique (simple backward)}
 
@@ -233,8 +252,7 @@ Un modèle du problème est aussi réalisé afin de résoudre les instances dans
 \end{floatrow}
 \end{figure}
 
-\paragraph{}Les résultats de ce jeu de données ressemblent fortement au jeu de données précédent.
-
+\paragraph{}Les résultats de ce jeu de données ressemblent fortement au jeu de données précédent. On remarque tout de même une amélioration des résultats pour les algorithmes de programmation dynamique, avec la méthode du \textbf{core} donnant des résultats sous les 10 minutes pour les instances inférieures à 200 objets, contre seulement 50 pour les données précédentes. La méthode de \textbf{forward} peut gérer des instances de 100K objets aisément sur ces instances, parvenant donc à couper par des bornes ou de la dominance, là où elle n'y parvenait pour le jeu de données précédent.
 
 \subsection{Données fortement corrélées sur le poids uniquement}
 
@@ -264,7 +282,9 @@ Un modèle du problème est aussi réalisé afin de résoudre les instances dans
 \end{floatrow}
 \end{figure}
 
-\paragraph{}A partir de 160000 items, le core ne donne pas forcément la bonne solution (dû à l'utilisation du type "int" qui fausse le résultat de la relaxation linéaire sur de trop grand nombre).
+\paragraph{}La particularité de ces résultats par rapport aux autres est de posséder une forte dispersion. On retrouve des instances simples et compliquées au sein d'une même distribution de données.
+\paragraph{}On note une difficulté pour la méthode de \textbf{branch-and-bound} à donner des résultats rapidement, ce qui n'était pas dans les précédents jeux de données. L'augmentation du nombre d'objets influe grandement sur les temps de résolution, avec plus de 10 minutes en moyenne pour résoudre des instances de 1600 objets, alors que plus d'un million d'objets pouvaient être gérés dans les autres jeux de données.
+\paragraph{}Les méthodes de programmation dynamique permettent cependant d'obtenir de bons résultats sur ces instances, en réussissant à ne pas dépasser les 10 minutes dans le pire cas pour des instances de 10000 objets. Les temps sont tout de même relativement plus long dans la résolution que ce que l'on peut obtenir au mieux dans les jeux de données précédent.
 
 
 \end{document}
