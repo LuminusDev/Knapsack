@@ -118,7 +118,17 @@ Un modèle du problème est aussi réalisé afin de résoudre les instances dans
 
 \subsection{Plus court chemin dans un graphe}
 
-\paragraph{}
+\paragraph{}Il est possible de reformuler le problème du sac à dos binaire comme un problème de plus court chemin dans un graphe. Le graphe est créé suivant les principes de couches, de transitions et d'états. On notera $maxProfit$ la valeur du plus grand profit dans l'ensemble d'objet de l'instance du problème.
+
+\paragraph{}Pour notre problème, un \textbf{état} est un noeud du graphe, et il représente le profit maximal pour un ensemble d'objets (tous les objets de la couche actuelle et des couches précédentes) et la capacité utilisée.
+
+\paragraph{}Les \textbf{couches} représentent chacune la prise de décision sur un objet $i$. Une couche compte au maximum $W+1$ noeuds (au pire des cas, car on ne crée pas les noeuds qui ne correspondent pas à une solution partielle). Il y a au plus $n$ couches dans le graphe, correspondant au nombre d'objet dans le problème.
+
+\paragraph{}Une \textbf{transition} correspond à un arc dans le graphe, et relie les couches adjacentes. Chaque noeud possède au maximum 2 transitions sortantes. La première transition, vers l'état de la couche suivante avec la même capacité et un poids de $maxProfit$ sur l'arc, représente le fait de ne pas prendre l'objet de la couche actuelle. la deuxième transition, vers l'état de la couche suivante avec la même capacité + $poids_i$  et un poids de $maxProfit - profit_i$ sur l'arc, représente au contraire le fait de prendre l'objet.
+
+\paragraph{}L'utilisation de $maxProfit$ dans les poids des arcs permet de n'utiliser que des valeurs positives ou nulles, permettant de ce fait d'utiliser l'algorithme de Dijkstra sur ce graphe. En ajoutant un dernier noeud faisant office de puit, dont les noeuds de la dernière couche possèdent une transition vers lui (de poids $maxProfit$), on peut réaliser un plus court chemin entre le noeud de l'état de couche 1 avec une capacité de 0, et le puit. Le plus court chemin obtenu permet alors de trouver la solution au problème.
+
+\paragraph{}Attention cependant, car pour obtenir la valeur de la solution, il faut prendre en compte le fait d'avoir ajouter $maxProfit$ au poids des arcs, et donc les retirer pour avoir la véritable valeur. 
 
 \section{Résultats et analyses}
 
@@ -130,7 +140,7 @@ Un modèle du problème est aussi réalisé afin de résoudre les instances dans
 
 \paragraph{}Dans les résultats des jeux de données, tous les temps sont exprimés en millisecondes. De plus :
 \begin{itemize}
- \item[\textbf{"OoM"}] : "Out Of Memory" correspondant à une trop grande utilisation de la mémoire (> ~2Go).
+ \item[\textbf{"OoM"}] : "Out Of Memory" correspondant à une trop grande utilisation de la mémoire ($>$~2Go).
  \item[\textbf{"-"}] : temps d'exécution supérieur à 10 minutes.
  \end{itemize}
 
