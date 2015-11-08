@@ -185,7 +185,37 @@ X^k(b) = \left\{
 
 \subsection{Programme dynamique (forward en liste)}
 
-\paragraph{}
+\paragraph{}La méthode du programme dynamique avec une matrice possède un énorme désavantage : son utilisation mémoire. Cela l'empêche d'être utilisé dans un environnement contraint (système embarqué, IoT, ...) ou pour résoudre de très grosses instances. C'est ainsi que l'on se dirige vers un \textbf{programme dynamique en liste}.
+
+\paragraph{}On ne conserve que le poids et le profit dans un état, ce qui correspond à une solution partielle au problème. L'objectif de la liste est de ne garder que les états utiles au cours de la récursion. On peut le faire grâce au principe de dominance des solutions partielles.
+
+\paragraph{}Ainsi, pour un état $(w,p)$ avec $w$ comme poids actuel et $p$ comme profit actuel, on peut appliquer la \textbf{dominance} par rapport à un autre état qui indique que :
+
+\[
+(w^1,p^1)\succ(w^2,p^2), \textnormal{ si }
+(w^1 < w^2 \wedge p^1 \geq p^2) \vee (w^1 = w^2 \wedge p^1 > p^2)
+\]
+
+
+\paragraph{}On peut aussi couper les états par borne, dans le cas où $p+PL(n-k,W-w) \leq LB$, avec $PL(a,b)$ la relaxation linéaire du problème pour les objets de $n-k$ à $k$ et une capacité de $W-w$, et $LB$ une borne inférieure de l'instance calculée préalablement à partir d'un algorithme glouton (combinaison du glouton sur les ratios et du glouton sur les profits).
+
+\paragraph{}L'algorithme de résolution par la méthode de programme dynamique en liste peut alors se résumer à :
+
+\begin{algorithm}[H]
+	Soit $list=\lbrace (0,0)\rbrace $\\
+	\For{$k=1$ à $n$}{
+		Soit $list'$ vide\\
+		\For{$s=(w,p) \in list$}{
+			\If{$w+w_k \leq W$}{
+				Ajouter $(w+w_k,p+p_k)$ à $list'$\\
+       		}
+       		Fusionner $list'$ et $list$ en éliminant les états dominés\\
+		}
+	}
+	\Return{$max\lbrace p : (w,p) \in list \rbrace$}
+\end{algorithm}
+
+\paragraph{}On ne garde alors qu'un nombre limité d'états dans la liste, qui est inférieur au $\mathcal{O}(nW)$ de la matrice. Pour retrouver la solution, on ajoute un pointeur dans chaque état vers son état précédent. Il est a noté que l'utilisation de pointeur peut augmenter la mémoire nécessaire au fonctionnement de l'algorithme si elle est mal gérée. En effet, garder un pointeur dans un état actif veut dire qu'il ne faut pas supprimer les états précédents ce pointeur. On ne peut donc rien supprimer dans un langage comme C++ où la gestion de la mémoire dynamique doit être réalisée à la main. Dans le cas de ce projet, fait en Java, le GC (garbage collecter) s'occupe seul de supprimer les états n'ayant plus aucun pointeur d'actif, ce qui limite l'empreinte mémoire.
 
 \subsection{Programme dynamique (core en liste)}
 
