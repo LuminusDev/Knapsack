@@ -1,6 +1,7 @@
 \documentclass[12pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[french]{babel}
+\usepackage[french,onelanguage]{algorithm2e}
 \usepackage[tikz]{bclogo}
 \usepackage{geometry}
 \usepackage{array}
@@ -73,10 +74,10 @@ L'objectif du projet est d'implémenter différentes méthodes de résolution du
 \paragraph{}Pour résoudre ce problème, plusieurs algorithmes ont été implémenté.
 \begin{itemize}
 	\item Branch And Bound
+	\item Plus court chemin dans un graphe
 	\item Programme Dynamique (Simple Backward)
 	\item Programme Dynamique (Forward avec liste)
 	\item Programme Dynamique (Core avec liste)
-	\item Plus court chemin dans un graphe
 \end{itemize}
 Un modèle du problème est aussi réalisé afin de résoudre les instances dans le solveur CPlex. Cela permet de vérifier les valeurs des solutions des algorithmes implémentés.
 
@@ -104,18 +105,6 @@ Un modèle du problème est aussi réalisé afin de résoudre les instances dans
 
 \paragraph{}L'avantage de cet algorithme est qu'il permet d'obtenir une borne inférieure en $\mathcal{O}(n)$, $n$ étant le nombre d'objet. De plus, cette borne correspondant à la solution d'un algorithme glouton consistant à prendre dans l'ordre les objets ayant le meilleur ratio profit sur poids s'il rentre dans le sac. Cette borne, suivant les instances de problème, permet de couper rapidement des branches de l'arbre de recherche, en adéquation avec la borne supérieure.
 
-\subsection{Programme dynamique (simple backward)}
-
-\paragraph{}
-
-\subsection{Programme dynamique (forward en liste)}
-
-\paragraph{}
-
-\subsection{Programme dynamique (core en liste)}
-
-\paragraph{}
-
 \subsection{Plus court chemin dans un graphe}
 
 \paragraph{}Il est possible de reformuler le problème du sac à dos binaire comme un problème de plus court chemin dans un graphe. Le graphe est créé suivant les principes de couches, de transitions et d'états. On notera $maxProfit$ la valeur du plus grand profit dans l'ensemble d'objet de l'instance du problème.
@@ -128,7 +117,79 @@ Un modèle du problème est aussi réalisé afin de résoudre les instances dans
 
 \paragraph{}L'utilisation de $maxProfit$ dans les poids des arcs permet de n'utiliser que des valeurs positives ou nulles, permettant de ce fait d'utiliser l'algorithme de Dijkstra sur ce graphe. En ajoutant un dernier noeud faisant office de puit, dont les noeuds de la dernière couche possèdent une transition vers lui (de poids $maxProfit$), on peut réaliser un plus court chemin entre le noeud de l'état de couche 1 avec une capacité de 0, et le puit. Le plus court chemin obtenu permet alors de trouver la solution au problème.
 
-\paragraph{}Attention cependant, car pour obtenir la valeur de la solution, il faut prendre en compte le fait d'avoir ajouter $maxProfit$ au poids des arcs, et donc les retirer pour avoir la véritable valeur. 
+\paragraph{}Attention cependant, car pour obtenir la valeur de la solution, il faut prendre en compte le fait d'avoir ajouter $maxProfit$ au poids des arcs, et donc les retirer pour avoir la véritable valeur.
+
+\subsection{Programme dynamique (simple backward)}
+
+\paragraph{}L'implémentation naïve du problème de sac à dos binaire avec un programme dynamique consiste à reprendre les états et les couches de la méthode de résolution dans un graphe. On obtient ainsi une matrice en $\mathcal{O}(nW)$ en mémoire.
+
+\paragraph{}Une cellule de cette matrice correspond à $V^k (b)$ qui est le profit maximum qu'on peut obtenir avec les objets $1$ à $k$ et une capacité de $b$, telle que:
+
+\[
+V^k (b) = \mathrm{max}
+\lbrace
+\sum_{i=1}^{k}p_i x_i :
+\sum_{i=1}^{k}w_i x_i \leq b,
+x_i \in \lbrace0,1\rbrace i = 1,\ldots,k
+\rbrace
+\]
+
+\paragraph{}Il suffit ensuite d'avoir une formule de récurrence permettant de calculer les $V^k (b)$ de proche en proche, avec
+
+\[
+V^k (b) = \mathrm{max}
+\lbrace
+\underbrace{V^{k-1}(b)}_{x_k=0},
+\underbrace{V^{k-1}(b-w_k)+p_k}_{x_k=1}
+\rbrace
+, \textnormal{ pour } k = 1,\ldots,n \textnormal{ et } b = 1,\ldots,W
+\]
+
+et initialisée telle que $V^0(b)=0$ pour $b=0,\ldots,W$.
+
+\paragraph{}La valeur de la solution est donnée par $\mathrm{max}_{b\leq W}V^n(b)$.
+
+\paragraph{}L'algorithme pour résoudre ce programme dynamique est le suivant :
+
+\begin{algorithm}[H]
+	\For{$b=0$ à $W$}{
+		$V^0(b)=0$\;
+	}
+	\For{$k=0$ à $n-1$}{
+		\For{$b=W$ à $w_k$}{
+			\eIf{$V^k(b-w_k)+p_k > V^k(b)$}{
+				$V^{k+1}(b) = \mathrm{max}\lbrace V^k(b), V^k(b-w_k)+p_k\rbrace$\;
+       		}{
+       			$V^{k+1}(b) = V^k(b)$\;
+       		}	    		
+		}
+		\For{$b=0$ à $\mathrm{min}\lbrace w_k-1, W\rbrace$}{
+			$V^{k+1}(b) = V^k(b)$\;
+		}
+	}
+	\Return{$V[W]$}
+\end{algorithm}
+
+\paragraph{}On peut, à partir de là, retrouver la solution en parcourant les objets dans le sens inverse de l'algorithme, avec :
+
+\[
+X^k(b) = \left\{
+	\begin{array}{ll}
+		1 \textnormal{ si } V^{k-1}(b-w_k)+p_k > V^{k-1}(b) \\
+		0 \textnormal{ sinon} 
+	\end{array}
+	\right.
+\]
+
+\paragraph{}On obtient ainsi une algorithme qui résout le problème de sac à dos binaire avec une complexité pseudo-polynomiale (qui dépend de la taille de $W$) de $\mathcal{O}(nW)$ en temps de calcul et un espace mémoire de $\mathcal{O}(nW)$.
+
+\subsection{Programme dynamique (forward en liste)}
+
+\paragraph{}
+
+\subsection{Programme dynamique (core en liste)}
+
+\paragraph{}
 
 \section{Résultats et analyses}
 
@@ -296,5 +357,11 @@ Un modèle du problème est aussi réalisé afin de résoudre les instances dans
 \paragraph{}On note une difficulté pour la méthode de \textbf{branch-and-bound} à donner des résultats rapidement, ce qui n'était pas dans les précédents jeux de données. L'augmentation du nombre d'objets influe grandement sur les temps de résolution, avec plus de 10 minutes en moyenne pour résoudre des instances de 1600 objets, alors que plus d'un million d'objets pouvaient être gérés dans les autres jeux de données.
 \paragraph{}Les méthodes de programmation dynamique permettent cependant d'obtenir de bons résultats sur ces instances, en réussissant à ne pas dépasser les 10 minutes dans le pire cas pour des instances de 10000 objets. Les temps sont tout de même relativement plus long dans la résolution que ce que l'on peut obtenir au mieux dans les jeux de données précédent.
 
+\section{Conclusion}
+
+\paragraph{}En prenant en compte les résultats obtenus sur les jeux de données précédent, on peut remarquer que deux méthodes se démarquent dans la résolution du problème de sac à dos binaire.
+
+\paragraph{}En étudiant au préalable la corrélation des données, on serait amener à utiliser la méthode de \textbf{branch-and-bound} lorsque les données sont faiblement corrélées ou au contraire très fortement corrélées linéairement. On peut résoudre des instances contenant des millions d'objets de cette manière. 
+A partir du moment où les données deviennent fortement corrélées (de manière non linéaire), cette méthode peut rapidement être dépassée, et dans ce cas on lui préférera la méthode de programmation dynamique, et plus particulièrement la méthode de \textbf{programmation dynamique en liste}.
 
 \end{document}
