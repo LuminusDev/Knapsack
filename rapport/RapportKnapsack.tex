@@ -43,7 +43,7 @@
 \maketitle
 
 \abstract
-L'objectif du projet est d'implémenter différentes méthodes de résolution du problème de sac à dos binaire, afin des les comparer. Il s'agit des méthodes du Branch And Bound, de Programmation Dynamique (sous plusieurs implémentations), de Modèle de Flot dans un graphe, ainsi que l'utilisation du solveur Cplex. Le langage de programmation pour atteindre ce but est libre, mais sa rapidité est essentielle pour la résolution. J'ai par conséquent choisi de réaliser le projet en Java, au détriment de C++. Les résultats sont présentés en prenant en compte les comportements des algorithmes suivant les types d'instance (nombre d'objets, capacité maximale du sac, corrélation des objets). L'ensemble du projet peut se retrouver à l'adresse suivante : \url{https://github.com/LuminusDev/Knapsack/}.
+L'objectif du projet est d'implémenter différentes méthodes de résolution du problème de sac à dos binaire, afin des les comparer. Il s'agit des méthodes du Branch And Bound, de Programmation Dynamique (sous plusieurs implémentations), de Modèle de Flot dans un graphe, ainsi que l'utilisation du solveur Cplex. Le langage de programmation pour atteindre ce but est libre, mais sa rapidité est essentielle pour la résolution. Le projet a par conséquent été réalisé en Java, au détriment de C++. Les résultats sont présentés en prenant en compte les comportements des algorithmes suivant les types d'instance (nombre d'objets, capacité maximale du sac, corrélation des objets). L'ensemble du projet peut se retrouver à l'adresse suivante : \url{https://github.com/LuminusDev/Knapsack/}.
 
 \newpage
 
@@ -219,7 +219,104 @@ X^k(b) = \left\{
 
 \subsection{Programme dynamique (core en liste)}
 
-\paragraph{}
+\paragraph{}La dernière implémentation d'un programme dynamique consiste à utiliser le principe de \textbf{core} dans un problème de sac à dos.
+
+\paragraph{}Trions les objets de manière décroissante par leur ratio profit/poids. Le core est alors l'intervalle $[a,b]$ avec $1 \leq a \leq b \leq n$ tel que :
+
+\[
+Z^*=\sum_{i<a}p_i+\mathrm{max}
+\lbrace
+\sum_{i=a}^b p_i x_i : \sum_{i=a}^b w_i x_i \leq W - \sum_{i<a} w_i,
+x_i \in \lbrace 0,1 \rbrace i \in [a,b]
+\rbrace
+\]
+
+\paragraph{}Nous utilisons cette formule pour définir $V^{a,b}(d) = Z^*$ en remplaçant $W$ par $d$ dans l'équation.Le principe est alors de partir d'un objet, et d'augmenter petit à petit la taille de notre core afin d'obtenir un intervalle $[1,n]$, donnant ainsi la valeur de la solution à notre problème.
+
+\paragraph{}On initialise alors la récurrence avec $V^{c,c-1}(d) = \sum_{i<c}p_i \forall d > \sum_{i<c}w_i$.
+
+\paragraph{}La récursion, $\forall a,b$ et $d=0,\ldots,2W$ est :
+
+\[
+V^{a,b}(d)=\mathrm{max}
+\lbrace
+\underbrace{
+	V^{a+1,b}(d)
+}_{x_a=1},
+\underbrace{
+	V^{a+1,b}(d+w_a)-p_a
+}_{x_a=0},
+\]
+
+\[
+\underbrace{
+	V^{a,b-1}(d)
+}_{x_b=0},
+\underbrace{
+	V^{a,b-1}(d-w_b)+p_b
+}_{x_b=1}
+\rbrace
+\]
+
+\paragraph{}On suit ensuite la séquence $\forall d, V^{c,c-1},V^{c,c},V^{c-1,c},V^{c-1,c+1},\ldots,V^{1,n}$ pour obtenir le résultat en forward.
+
+\paragraph{}On prend dans notre algorithme pour objet $c$ l'objet critique, correspondant à l'objet tel que, dans l'ordre défini précédemment, les $c-1$ objets précédent entrent dans le sac à dos, et l'objet $c$ ne rentre pas à cause de la capacité.
+
+\paragraph{}Les états, notés $(a,b,w,p)$, sont définis par :\\
+$\mathbf{a}$ et $\mathbf{b}$ sont les bornes de l'intervalle;\\
+$\mathbf{w}=\overline{w}+\tilde{w}$ tel que $\overline{w}=\sum_{i<a}w_i$ et $\tilde{w} \leq W$;\\
+$\mathbf{p}=\overline{p}+\tilde{p}$ tel que $\overline{p}=\sum_{i<a}p_i$ et $p+\sum_{i>b}p_i \geq LB$;\\
+
+\paragraph{}La borne inférieure, notée $LB$, correspond à la meilleure valeur de solution partielle, soit :\\
+$\mathbf{LB}=\mathrm{max}\lbrace p : (a,b,w,p) \in list \wedge w \leq W \rbrace$ avec $list$ l'ensemble des états à un moment de l'algorithme;
+
+\paragraph{}L'algorithme de résolution peut ainsi se résumer à :\\
+\begin{algorithm}[H]
+	Soit $list=\lbrace (c,c-1,\sum_{i<a}w_i,\sum_{i<a}p_i)\rbrace $\\
+	\While{$a>1 \vee b<n$}{
+		\If{$b<n$}{
+			Soit $list'$ vide;\\
+			\For{$(a,b,w,p) \in list$}{
+				Ajouter $(a,b+1,w,p)$ à $list'$;\\
+				\If{$\tilde{w}+w_{b+1} \leq W$}{
+					Ajouter $(a,b+1,w+w_{b+1},p+p_{b+1})$ à $list'$;\\
+       			}
+			}
+			Éliminer les états par borne et dominance dans $list'$;\\
+       		$list = list'$;\\
+		}
+		\If{$a>1$}{
+			Soit $list'$ vide;\\			
+			\For{$(a,b,w,p) \in list$}{
+				Ajouter $(a-1,b,w,p)$ à $list'$;\\
+				Ajouter $(a-1,b,w-w_{b+1},p-p_{b+1})$ à $list'$;\\
+			}
+			Éliminer les états par borne et dominance dans $list'$;\\
+       		$list = list'$;\\
+		}
+	}
+	\Return{$LB$}
+\end{algorithm}
+
+\paragraph{}L'élimination par dominance est identique à la méthode de forward par liste :
+
+\[
+(a,b,w^1,p^1)\succ(a,b,w^2,p^2), \textnormal{ si }
+(w^1 < w^2 \wedge p^1 \geq p^2) \vee (w^1 = w^2 \wedge p^1 > p^2)
+\]
+
+\paragraph{}L'élimination par borne intervient si, pour un $(a,b,w,p)$ donné :
+
+\[
+\tilde{p}+\mathrm{max}
+\lbrace
+\sum_{i<a,i>b}p_i x_i : \sum_{i<a,i>b}w_i x_i \leq W - \tilde{w}, x_i \in [0,1]
+\rbrace \leq LB
+\]
+
+\paragraph{}Pour retrouver la solution, on ajoute un pointeur dans chaque état vers son état précédent.
+
+\paragraph{}Il est intéressant de noter que, dans le cas où $c=1$ et $LB$ est la sortie d'un algorithme glouton, on retrouve exactement l'algorithme de programmation dynamique forward en liste vu dans le chapitre précédent.
 
 \section{Résultats et analyses}
 
@@ -234,6 +331,8 @@ X^k(b) = \left\{
  \item[\textbf{"OoM"}] : "Out Of Memory" correspondant à une trop grande utilisation de la mémoire ($>$~2Go).
  \item[\textbf{"-"}] : temps d'exécution supérieur à 10 minutes.
  \end{itemize}
+ 
+ \paragraph{}Les temps on été réalisés sur une machine sous Windows 8.1, avec un processeur Intel Core i5-4460 cadencé à 3,2GHZ et possédant 8Go de RAM DDR3. Les paramètres de la JVM autorise une allocation mémoire maximale du tas de 2,13Go.
 
 \subsection{Données faiblement corrélées}
 
